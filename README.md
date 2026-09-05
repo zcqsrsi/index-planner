@@ -2,15 +2,25 @@
 
 Approach sustained, exploratory projects through trackable tasks and organised notes.
 
-Index is a local-first project planner and notebook for macOS: projects broken
-into aims and sub-objectives, a day planner under each, a dashboard that
-watches everything for overdue and going-stale work, and a block editor
-for the writing next to it. Everything lives as plain JSON and Markdown
-in one `data/` folder — no account, no sync, no server.
+Index is a project planner and notebook for macOS that reacts to the tasks you create. The motivation was to create a notebook and planner to help break down research tasks with broad, open-ended goals into tangible sub objectives all while having those objects tracked- so you never lose your bearings. Everything was designed with a calm, accessible and productive working environment in mind. 
 
-- Projects → aims → sub-objectives → tasks, with a day-planner table under each sub-objective
-- Dashboard "map": every open thread on one ring, color-coded healthy / going stale / overdue
-- Big picture statements per project (or shared across a group), with a full revision history
+Instead of long lists of overdue reminders, I chose more abstract (and satisfying) ways of presenting a workload.   
+
+To that end, the focal point of Index is a floating ring that tracks your projects, allowing you to get to grips with tasks with merely a glance. 
+
+As your projects evolve, the threads of tasks, notes and their “big-picture” questions are recorded in a constellation, giving a birds-eye view of the history of your work and any revisions, changes in direction, or resolved questions that you made.
+
+
+More Details: 
+Projects are broken into aims and sub-objectives- which each have a day planner and block editor for the notes you want to make along the way to reaching those objectives. 
+The Map is a dashboard that
+monitors everything for overdue work. 
+
+Everything lives as plain JSON and Markdown
+in one `data/` folder — no account, no sync, no server. You can direct your backups to anywhere you like (such as an iCloud folder).
+
+
+Big picture statements per project (or shared across a group), with a full revision history
 - Block editor with page links (`@`), inline tags (`#tag`), undo/redo, images, page history
 - The Log: one automatic case file per day, with a capture inbox (⌘J)
 - Threads: a replayable timeline of everything, backlinks included
