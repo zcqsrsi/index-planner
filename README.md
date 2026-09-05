@@ -1,6 +1,6 @@
 # Index
 
-organise overwhelming projects into tangible tasks
+Approach sustained, exploratory projects through trackable tasks and organised notes.
 
 Index is a local-first project planner and notebook for macOS: projects broken
 into aims and sub-objectives, a day planner under each, a dashboard that
