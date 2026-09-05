@@ -1,0 +1,418 @@
+/* Threads view: the timeline band + day detail + as-of page previews.
+   Same design language as the dashboard: flat, hairlines, mono for data. */
+
+.threads-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 40px 48px;
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.threads-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.threads-filter {
+  width: 220px;
+  font-size: calc(12px * var(--ui-scale));
+  font-family: var(--font-data);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 4px 2px;
+}
+.threads-filter:focus { border-bottom-color: var(--accent); }
+
+/* ---- The band: one column per day, bar height = volume ---- */
+
+.tl-band-wrap { overflow-x: auto; padding-bottom: 4px; }
+.tl-band {
+  display: flex;
+  align-items: flex-end;
+  min-width: 100%;
+  height: 84px;
+}
+.tl-col {
+  flex: 1 1 3px;
+  min-width: 3px;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  cursor: pointer;
+}
+.tl-col:hover .tl-bar { background: var(--fg-dim); }
+.tl-bar {
+  width: 100%;
+  height: var(--h);
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  min-height: 1px;
+}
+.tl-col.has .tl-bar { background: color-mix(in srgb, var(--accent) 70%, transparent); }
+.tl-col .tl-bar[data-edits] { background: var(--accent); }
+.tl-col.sel .tl-bar { background: var(--fg); }
+.tl-month {
+  position: absolute;
+  top: 66px;
+  left: 0;
+  font-size: calc(10px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* ---- Day detail ---- */
+
+.tl-detail { margin-top: 22px; }
+.tl-hint, .tl-quiet { color: var(--fg-dim); font-size: calc(13px * var(--ui-scale)); padding: 6px 0; }
+.tl-quiet { font-style: italic; }
+.tl-day-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+.tl-day-title { font-size: calc(16px * var(--ui-scale)); font-weight: 600; }
+.tl-day-count {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-pages { display: flex; flex-direction: column; margin-bottom: 10px; }
+.tl-page {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  text-align: left;
+  padding: 7px 8px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  color: var(--fg);
+}
+.tl-page:hover { background: var(--bg-alt); border-left-color: var(--accent); }
+.tl-page-name { font-size: calc(13.5px * var(--ui-scale)); font-weight: 500; flex: 0 1 auto; }
+.tl-page-path { font-size: calc(11px * var(--ui-scale)); font-family: var(--font-data); color: var(--fg-dim); flex: 1; }
+.tl-page-when { font-size: calc(11px * var(--ui-scale)); font-family: var(--font-data); color: var(--accent); flex: none; }
+.tl-page-arrow { color: var(--fg-dim); flex: none; }
+
+.tl-feed { margin-top: 6px; }
+.tl-feed:empty { display: none; }
+
+/* ---- The feed, grouped under big questions ----
+   Each group hangs off a thread spine: the question header is the node at
+   the top, entries hang below it, and when the wording had a predecessor a
+   second node threads back to it. The header reads holo, quietly — thin
+   gold light, letter-spaced, a faint halo rather than a glow. */
+.tq-group {
+  position: relative;
+  margin: 0 0 20px;
+  padding-left: 20px;
+}
+.tq-group::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  bottom: 2px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--func), transparent);
+  opacity: 0.45;
+}
+.tq-head {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0 0 4px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid color-mix(in srgb, var(--func) 25%, transparent);
+}
+.tq-mark {
+  color: var(--func);
+  font-size: calc(12px * var(--ui-scale));
+  text-shadow: 0 0 7px color-mix(in srgb, var(--func) 30%, transparent);
+}
+.tq-text {
+  font-family: var(--font-data);
+  font-size: calc(13px * var(--ui-scale));
+  letter-spacing: 0.04em;
+  color: var(--func);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--func) 25%, transparent);
+}
+.tq-head-none { border-bottom-color: var(--border); }
+.tq-head-none .tq-text {
+  color: var(--fg-dim);
+  text-shadow: none;
+  font-size: calc(11.5px * var(--ui-scale));
+  letter-spacing: 0.06em;
+}
+.tq-head-none .tq-mark { text-shadow: none; opacity: 0.6; }
+.tq-prev {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 6px;
+}
+/* The node that ties this wording back to the one it replaced. */
+.tq-node {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--func);
+  flex: none;
+  margin-left: -20px; /* sit on the spine */
+  background: var(--bg);
+  box-shadow: 0 0 6px var(--func);
+}
+.tq-prev-text {
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--fg-dim);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tq-entries { display: flex; flex-direction: column; gap: 2px; }
+/* A question with activity folds it away; the head opens it. */
+.tq-head[data-toggle] { cursor: pointer; }
+.tq-head[data-toggle]:hover .tq-text { text-shadow: 0 0 6px color-mix(in srgb, var(--func) 45%, transparent); }
+.tq-tw {
+  margin-left: auto;
+  color: var(--fg-dim);
+  font-size: calc(10px * var(--ui-scale));
+  transition: transform 0.12s ease;
+}
+.tq-group.tq-open .tq-tw { transform: rotate(90deg); color: var(--func); }
+.tq-quiet {
+  font-size: calc(11px * var(--ui-scale));
+  color: var(--fg-dim);
+  font-style: italic;
+  padding: 2px 0 0;
+}
+/* Settings → Threads: the halo off, and the head's size. */
+.qglow-off .tq-text, .qglow-off .tq-mark { text-shadow: none; }
+.qglow-off .tq-head[data-toggle]:hover .tq-text { text-shadow: none; }
+.q-sm .tq-text { font-size: calc(11px * var(--ui-scale)); }
+.q-lg .tq-text { font-size: calc(16px * var(--ui-scale)); }
+
+/* ---- As-of preview ---- */
+
+.tl-preview-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.tl-preview-note {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+}
+.tl-preview { padding: 4px 2px; }
+.tl-preview-title { font-size: calc(22px * var(--ui-scale)); font-weight: 600; margin-bottom: 10px; }
+/* Day stamps, read-only, under the day head. */
+.tl-stamps { display: flex; align-items: baseline; gap: 14px; padding: 2px 0 4px; }
+.tl-stamps-label {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.tl-stamp { font-size: calc(12px * var(--ui-scale)); color: var(--fg); }
+.tls-k { font-family: var(--font-data); font-size: calc(10.5px * var(--ui-scale)); color: var(--fg-dim); }
+
+/* Weekly debrief */
+.debrief-totals { display: flex; flex-wrap: wrap; gap: 4px 22px; padding: 8px 0; }
+.debrief-total { font-size: calc(12px * var(--ui-scale)); font-family: var(--font-data); color: var(--fg-dim); }
+.debrief-total b { color: var(--fg); font-weight: 600; margin-right: 4px; }
+.debrief-week { display: flex; align-items: flex-end; gap: 10px; padding: 10px 0 14px; }
+.debrief-day { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.deb-bar {
+  width: 22px;
+  height: var(--h, 2px);
+  min-height: 2px;
+  background: var(--accent);
+  opacity: 0.85;
+}
+.deb-bar[data-quiet] { background: var(--border); }
+.deb-label { font-size: calc(10px * var(--ui-scale)); font-family: var(--font-data); color: var(--fg-dim); }
+.debrief-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.debrief-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 6px 2px;
+  cursor: pointer;
+  color: var(--fg);
+  font-size: calc(13px * var(--ui-scale));
+}
+.debrief-row:hover { background: var(--bg-alt); }
+.debrief-row[disabled] { cursor: default; }
+.deb-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.deb-n { font-family: var(--font-data); font-size: calc(11.5px * var(--ui-scale)); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+
+/* ---- Sky: every thread in this universe as a constellation ---- */
+
+/* The pane header carries only its fold button — no title. */
+.threads-panel-header { justify-content: flex-end; }
+
+.threads-hero-tools { display: flex; align-items: center; gap: 16px; }
+/* The sky's question toggle (top left): a muted caption beside the same
+   ring-toggle the days/sky switch wears. */
+.sky-q-toggle-wrap { display: flex; align-items: baseline; gap: 8px; }
+.sky-q-cap {
+  font-family: var(--font-data);
+  font-size: calc(11px * var(--ui-scale));
+  letter-spacing: 0.06em;
+  color: var(--fg-dim);
+}
+/* Sky mode fills the room — and drops the auto margins that would
+   otherwise opt the column out of flex stretch and shrink-wrap it. */
+.threads-sky-main { max-width: none; margin: 0; }
+
+/* The wash: the sky is a place, not a panel. Night for the dark themes
+   (and the token defaults), a pale morning for the light twins — both
+   mixed from each theme's own bg and accent so every theme keeps its hue. */
+:root {
+  --sky-wash:
+    radial-gradient(900px 520px at 68% -8%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
+    radial-gradient(700px 460px at 8% 110%, color-mix(in srgb, var(--func) 5%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg) 78%, #0b1424), color-mix(in srgb, var(--bg) 92%, #05080d));
+}
+:root[data-theme="index-dawn"], :root[data-theme="index-daylight"],
+:root[data-theme="index-daylight-alt"], :root[data-theme="index-silver-day"],
+:root[data-theme="index-silver-frost"], :root[data-theme="index-stock-paper"],
+:root[data-theme="olive-dawn"], :root[data-theme="navy-dawn"] {
+  --sky-wash:
+    radial-gradient(820px 480px at 24% -12%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 62%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg) 78%, #cfe2ec), color-mix(in srgb, var(--bg) 96%, #e9f3e9));
+}
+
+.tl-sky {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--sky-wash);
+}
+/* The passing: two faint lights ride the sky's rim, opposite one another,
+   circling at different paces in different hues — time made visible,
+   barely. Above the wash, beneath the stars. */
+.tl-sky::before, .tl-sky::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  z-index: 0;
+  pointer-events: none;
+}
+.tl-sky::before {
+  background: radial-gradient(420px 320px at 76% 50%,
+    color-mix(in srgb, var(--accent) 9%, transparent), transparent 62%);
+  animation: sky-drift 75s linear infinite;
+}
+.tl-sky::after {
+  background: radial-gradient(380px 300px at 24% 50%,
+    color-mix(in srgb, var(--func) 7%, transparent), transparent 62%);
+  animation: sky-drift 110s linear infinite reverse;
+}
+@keyframes sky-drift { to { transform: rotate(360deg); } }
+.sky-drift-off::before, .sky-drift-off::after { display: none; }
+.sky-svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; }
+/* Sky elements carry classes for every theme-dependent color — SVG
+   attributes can't take var(), so the renderer paints geometry only. */
+.sky-overdue { fill: none; stroke: var(--keyword); stroke-width: 1.1; stroke-dasharray: 2 2.5; opacity: 0.85; }
+/* Hover swells a star by resetting r — r is a geometry property in
+   Chromium, so the transition smooths the attribute change. */
+.sky-star { transition: r 0.16s ease; }
+/* Sizes are set per-render (inline style) — the sky scales with its crowd. */
+.sky-name { font-family: var(--font-data); letter-spacing: 0.06em; }
+/* A question's plate: ground of its own, mostly transparent, so stars and
+   figure lines keep drawing over it and the words still read. */
+.sky-q-box {
+  fill: color-mix(in srgb, var(--bg) 76%, transparent);
+  stroke: var(--border);
+}
+.sky-q-label {
+  font-family: var(--font-data);
+  font-style: italic;
+  letter-spacing: 0.08em;
+  fill: var(--fg-dim);
+}
+/* The outcome plate: the answer, landed. Solid gold against the
+   question's open ground — a harvest, never a closure. The dashed
+   diagonal ties the two; it reads question → answer, down-right. */
+.sky-o-box {
+  fill: color-mix(in srgb, var(--bg-active) 85%, transparent);
+  stroke: var(--func);
+  stroke-opacity: 0.55;
+}
+.sky-o-label {
+  font-family: var(--font-data);
+  letter-spacing: 0.08em;
+  fill: var(--fg);
+}
+.sky-q-diag { stroke: var(--fg-dim); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.7; }
+/* Questions toggled off: the plates hide in place — their outcomes and
+   diagonals hide with them, one unit, one toggle. The sky is never
+   redrawn, so the constellations keep their pose and their draw. */
+.sky-svg.q-off .sky-q-box, .sky-svg.q-off .sky-q-label,
+.sky-svg.q-off .sky-o-box, .sky-svg.q-off .sky-o-label,
+.sky-svg.q-off .sky-q-diag { display: none; }
+.sky-tw { animation: sky-tw 4.5s ease-in-out infinite alternate; }
+@keyframes sky-tw { from { opacity: 0.35; } to { opacity: 1; } }
+/* The build-out: a spoke draws itself from the central star outward
+   (pathLength normalises the dash), and the star kindles at its end a
+   beat later — the chart plots itself, faintness last. */
+.sky-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sky-draw 0.55s ease-out forwards;
+}
+@keyframes sky-draw { to { stroke-dashoffset: 0; } }
+.sky-fig { opacity: 0; animation: sky-fig 0.5s ease-out forwards; }
+@keyframes sky-fig { to { opacity: 1; } }
+.sky-hit { cursor: pointer; }
+.sky-tip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--bg-active);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: var(--font-data);
+  font-size: calc(12.5px * var(--ui-scale));
+  line-height: 1.7;
+  display: none;
+  z-index: 5;
+  white-space: nowrap;
+}
+.sky-dim { color: var(--fg-dim); }
+@media (prefers-reduced-motion: reduce) {
+  .sky-tw { animation: none; }
+  .tl-sky::before, .tl-sky::after { animation: none; }
+  .sky-line { stroke-dashoffset: 0; animation: none; }
+  .sky-fig { opacity: 1; animation: none; }
+}

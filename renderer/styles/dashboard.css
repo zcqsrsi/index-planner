@@ -1,0 +1,803 @@
+/* Dashboard, search, settings.
+   Design language: flat surfaces, hairline dividers, mono for data.
+   Boxes are reserved for floating layers (menus, modals). */
+
+.dashboard {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 40px 48px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* The threads view reuses the dashboard's type + feed vocabulary. */
+
+/* ---- Hero: date + status counts ---- */
+
+.dash-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+/* Day and date share one baseline — a quiet line, not a poster. */
+.dash-date { display: flex; align-items: baseline; gap: 10px; }
+.dash-date-big {
+  font-size: calc(26px * var(--ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.dash-date-sub {
+  color: var(--fg-dim);
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  letter-spacing: 0.06em;
+}
+.dash-counts {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding-bottom: 4px;
+}
+.dash-count {
+  font-size: calc(12px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+}
+.dash-count:hover { border-bottom-color: var(--fg-dim); }
+.dash-count b { color: var(--fg); margin-right: 4px; font-weight: 600; }
+.chip-overdue { color: var(--keyword); }
+.chip-overdue b { color: var(--keyword); }
+.chip-overdue:hover { border-bottom-color: var(--keyword); }
+.chip-today { color: var(--accent); }
+.chip-today b { color: var(--accent); }
+.chip-today:hover { border-bottom-color: var(--accent); }
+/* Bare-number chips: the count alone colours itself, calm → warm → hot.
+   Mixed from theme tokens so light + dark themes both read correctly. */
+.chip-calm b { color: var(--number); }
+.chip-calm:hover { border-bottom-color: var(--number); }
+.chip-warm b { color: color-mix(in srgb, var(--number) 45%, var(--keyword)); }
+.chip-warm:hover { border-bottom-color: color-mix(in srgb, var(--number) 45%, var(--keyword)); }
+.chip-hot b { color: var(--keyword); }
+.chip-hot:hover { border-bottom-color: var(--keyword); }
+
+/* ---- Task strip: hairline rows, not chips ---- */
+
+.dash-strip {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+.dash-task {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--keyword);
+  padding: 6px 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.dash-task.chip-today { border-left-color: var(--accent); }
+.dash-task:hover { background: var(--bg-alt); }
+.dt-title { font-size: calc(13px * var(--ui-scale)); color: var(--fg); font-weight: 500; }
+.dt-meta {
+  font-size: calc(11px * var(--ui-scale));
+  color: var(--fg-dim);
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Section titles: mono micro-labels with trailing hairline ---- */
+
+.dash-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: calc(10.5px * var(--ui-scale));
+  font-weight: 500;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--fg-dim);
+  margin: 26px 0 8px;
+}
+.dash-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.dash-upcoming .upcoming-list { display: flex; flex-direction: column; }
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 5px 8px;
+  font-size: calc(13px * var(--ui-scale));
+}
+.upcoming-item:hover { background: var(--bg-alt); }
+.up-date {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  width: 56px;
+  flex: none;
+  font-size: calc(11px * var(--ui-scale));
+}
+.up-title { color: var(--fg); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-project { font-size: calc(11px * var(--ui-scale)); flex: none; }
+/* Floating threads in the Upcoming inbox: afloat, no due date. */
+.upcoming-item.is-afloat .up-date { color: var(--func); }
+.upcoming-item.is-afloat .up-title { color: var(--fg-dim); font-style: italic; }
+
+/* ---- Projects: flat grid, hairline rules, no cards ---- */
+
+.dash-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0 28px;
+}
+.project-card {
+  display: block;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  padding: 10px 0 14px;
+  cursor: pointer;
+}
+.project-card:hover .pc-name { color: var(--accent); }
+.pc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.pc-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: calc(14px * var(--ui-scale));
+  color: var(--fg);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pc-due {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.pc-due.pc-overdue { color: var(--keyword); }
+.pc-progress {
+  height: 3px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.pc-progress span { display: block; height: 100%; }
+.pc-meta {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.pc-task {
+  font-size: calc(12px * var(--ui-scale));
+  color: var(--fg);
+  padding: 2px 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pc-task.pc-none { color: var(--fg-dim); font-style: italic; }
+.pc-overdue-task { color: var(--keyword); }
+.pc-task-date { color: var(--fg-dim); font-size: calc(11px * var(--ui-scale)); font-family: var(--font-data); }
+
+.dash-columns {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 36px;
+  margin-top: 6px;
+}
+
+/* ---- Activity feed + recent pages ---- */
+
+.activity-day {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-weight: 500;
+  font-family: var(--font-data);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 12px 0 2px;
+}
+.activity-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: calc(12.5px * var(--ui-scale));
+  padding: 3px 6px;
+}
+.activity-row[data-page] { cursor: pointer; }
+.activity-row[data-page]:hover { background: var(--bg-alt); }
+.act-icon { color: var(--fg-dim); width: 16px; flex: none; text-align: center; }
+.act-summary { color: var(--fg); flex: 1; }
+/* A collapsed run of identical moves — ×N sits between summary and span. */
+.act-count {
+  color: var(--func);
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  flex: none;
+  padding: 0 6px;
+}
+.act-time {
+  color: var(--fg-dim);
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.recent-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  font-size: calc(13px * var(--ui-scale));
+}
+.recent-page:hover { background: var(--bg-alt); }
+.rp-title { color: var(--fg); font-weight: 500; }
+.rp-path { font-size: calc(11px * var(--ui-scale)); color: var(--fg-dim); font-family: var(--font-data); }
+
+/* ---- Sidebar nav helpers (dashboard panel) ---- */
+
+.dash-nav { display: flex; flex-direction: column; gap: 2px; }
+.dash-nav button {
+  text-align: left;
+  padding: 6px 8px;
+  color: var(--sidebar-fg);
+  font-size: calc(13px * var(--ui-scale));
+}
+.dash-nav button:hover { background: var(--bg-alt); color: var(--fg); }
+.dash-tip {
+  margin-top: 20px;
+  padding: 4px 8px;
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  line-height: 2.1;
+}
+.dash-tip b { color: var(--fg); font-weight: 500; }
+
+/* ---- Search ---- */
+
+.search-main { flex: 1; overflow-y: auto; padding: 22px 34px; max-width: 760px; }
+.search-results-header { color: var(--fg-dim); font-size: calc(12px * var(--ui-scale)); margin-bottom: 12px; }
+.search-result {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 2px;
+  cursor: pointer;
+}
+.search-result:hover { background: var(--bg-alt); }
+.sr-title { font-size: calc(14px * var(--ui-scale)); font-weight: 600; color: var(--fg); }
+.sr-excerpt { font-size: calc(12.5px * var(--ui-scale)); color: var(--fg-dim); margin: 3px 0; }
+.sr-path { font-size: calc(11px * var(--ui-scale)); color: var(--accent); font-family: var(--font-data); }
+
+/* Tag cloud under the search box; #tag queries browse tasks, not pages. */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.tag-cloud-item {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--fg-dim);
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  padding: 2px 10px;
+  cursor: pointer;
+}
+.tag-cloud-item span { color: var(--fg-dim); opacity: .7; font-variant-numeric: tabular-nums; }
+.tag-cloud-item:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- Settings ---- */
+
+.settings-main { flex: 1; overflow-y: auto; padding: 26px 40px; max-width: 820px; }
+.settings-main h2 { margin: 22px 0 4px; font-size: calc(18px * var(--ui-scale)); font-weight: 600; }
+.settings-sub { color: var(--fg-dim); font-size: calc(13px * var(--ui-scale)); margin-bottom: 14px; line-height: 1.7; }
+.settings-sub code {
+  font-family: var(--font-data);
+  font-size: calc(12px * var(--ui-scale));
+  background: var(--bg-active);
+  padding: 1px 5px;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.theme-card {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+.theme-card:hover { border-color: var(--fg-dim); }
+.theme-card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.theme-swatch {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.theme-swatch span {
+  flex: 1;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Logo + dress pickers: a select beside a live preview — the grid of
+   cards became dropdowns once the choice lists grew. */
+.logo-pick { display: flex; align-items: center; gap: 10px; }
+.logo-select, .dress-select { min-width: 220px; }
+.dress-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.dress-blurb {
+  font-size: calc(11px * var(--ui-scale));
+  color: var(--fg-dim);
+  text-align: right;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+/* Font picker: the field's menu lists every installed family, each option
+   previewing in its own face. */
+.font-row { align-items: flex-start; }
+.font-wrap { position: relative; flex: 1; max-width: 380px; }
+.font-wrap .font-input { width: 100%; }
+.font-menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--bg-alt, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  padding: 4px;
+}
+.font-menu-group {
+  font: 600 calc(10px * var(--ui-scale)) var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  padding: 8px 8px 4px;
+}
+.font-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: calc(13.5px * var(--ui-scale));
+  line-height: 1.35;
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.font-menu-item:hover { background: var(--bg-active); }
+.font-menu-item code { font-family: var(--font-mono); font-size: calc(12px * var(--ui-scale)); }
+.font-menu-stack {
+  display: block;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: calc(10.5px * var(--ui-scale));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.font-menu-empty {
+  color: var(--fg-dim);
+  font-size: calc(12px * var(--ui-scale));
+  padding: 4px 8px 6px;
+}
+
+/* Backups status: hairline rows, mono for the stamps (data, not content). */
+.backup-status { margin-bottom: 10px; }
+.backup-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 9px 2px;
+  border-top: 1px solid var(--border);
+}
+.backup-key {
+  flex: 0 0 190px;
+  font-size: calc(12px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  letter-spacing: 0.04em;
+}
+.backup-val { flex: 1; font-size: calc(12.5px * var(--ui-scale)); font-family: var(--font-data); color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.backup-btn {
+  flex: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg);
+  font-size: calc(12px * var(--ui-scale));
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.backup-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.backup-btn:disabled { opacity: 0.4; cursor: default; }
+.backup-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+  font-size: calc(12px * var(--ui-scale));
+  font-family: var(--font-data);
+  padding: 3px 2px;
+  min-width: 0;
+}
+.backup-input:focus { border-bottom-color: var(--accent); outline: none; }
+.backup-dim { color: var(--fg-dim); }
+
+/* Journal-table preview inside the convert modal. */
+.journal-preview { margin-top: 10px; border-top: 1px solid var(--border); max-height: 300px; overflow-y: auto; }
+.journal-preview-day {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--border);
+  font-size: calc(12.5px * var(--ui-scale));
+}
+.journal-preview-date {
+  flex: none;
+  min-width: 86px;
+  font-family: var(--font-data);
+  color: var(--accent);
+  font-size: calc(11.5px * var(--ui-scale));
+}
+.journal-preview-note { flex-basis: 100%; color: var(--fg-dim); font-size: calc(11.5px * var(--ui-scale)); padding-left: 98px; }
+
+/* ---- The ring: projects as arcs, loose ends as ticks ---- */
+
+.dash-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ring-toggle { display: flex; gap: 2px; }
+.ring-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--fg-dim);
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+}
+.ring-toggle button.on { color: var(--fg); border-bottom-color: var(--accent); }
+.ring-toggle button:hover { color: var(--fg); }
+
+/* The ring leads; the legend trails off to the far right, small —
+   the ring dominates the room. */
+.ring-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 40px;
+  padding: 20px 0 30px;
+}
+.ring-stage {
+  position: relative;
+  flex: none;
+  width: 540px;
+  max-width: 74vw;
+}
+.ring { width: 100%; display: block; }
+.ring-center-num {
+  font-size: calc(34px * var(--ui-scale));
+  font-weight: 600;
+  fill: var(--fg);
+  dominant-baseline: middle;
+}
+/* The center number bands like the chips: calm → warm → hot by count,
+   mixed from theme tokens so light + dark themes both read correctly. */
+.ring-center-num.ring-calm { fill: var(--number); }
+.ring-center-num.ring-warm { fill: color-mix(in srgb, var(--number) 45%, var(--keyword)); }
+.ring-center-num.ring-hot { fill: var(--keyword); }
+.ring-center-label {
+  font-size: calc(12px * var(--ui-scale));
+  font-family: var(--font-data);
+  fill: var(--fg-dim);
+  letter-spacing: 0.06em;
+}
+/* ---- The hologram chamber: the hologram is the light source.
+   Kept clean — pure light, no scan lines, no compass points, no
+   calibration ring, no floor geometry. ---- */
+
+/* Hologram glow: the plates throw light. */
+.ring-rotor {
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 40%, transparent));
+}
+/* One plate per open thread — countable, like the control room's segments.
+   Hover is bound to the static .ring-plate-hit sibling (the plate itself
+   lifts, which would otherwise flicker at its edge); the group selector
+   carries the brighten so the plate lights even when the cursor sits on
+   the invisible margin around it. */
+.ring-plate { cursor: pointer; transition: transform 120ms ease, stroke-opacity 120ms; }
+.ring-plate-g:hover .ring-plate { stroke-opacity: 1; }
+.ring-plate-hit { cursor: pointer; }
+.ring-done { pointer-events: none; }
+.ring-tick { cursor: pointer; }
+.ring-tick:hover { stroke-width: 4; }
+
+.ring-legend {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 260px;
+  min-width: 0;
+  margin-left: auto;
+  padding-left: 24px;
+}
+.ring-legend-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 5px 8px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg);
+}
+.ring-legend-item:hover { background: var(--bg-alt); border-left-color: var(--accent); }
+.ring-dot { flex: none; width: 7px; height: 7px; align-self: center; }
+.ring-name { font-size: calc(12px * var(--ui-scale)); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ring-meta {
+  flex: none;
+  margin-left: auto;
+  font-size: calc(10px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Fonts: free-text family inputs (VSCode-style) + live preview ---- */
+
+.font-input { max-width: 340px; }
+.font-preview {
+  border-top: 1px solid var(--border);
+  padding: 14px 2px 4px;
+  margin-bottom: 14px;
+}
+.font-preview-ui {
+  font-size: calc(13px * var(--ui-scale));
+  color: var(--fg);
+  padding: 2px 0;
+}
+.font-preview-editor {
+  font-family: var(--font-editor);
+  font-size: var(--editor-font-size);
+  color: var(--fg);
+  padding: 8px 0;
+  line-height: 1.6;
+}
+.font-preview-note {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--func);
+}
+.theme-name { font-size: calc(12.5px * var(--ui-scale)); font-weight: 500; color: var(--fg); }
+
+.settings-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px;
+  color: var(--fg-dim);
+  font-size: calc(13px * var(--ui-scale));
+}
+.settings-shortcuts h3 { grid-column: 1/-1; font-size: calc(13px * var(--ui-scale)); color: var(--fg); margin-bottom: 2px; }
+
+/* ---- Today's threads briefing ---- */
+
+.brief { margin-bottom: 18px; }
+/* No heading — the threads speak for themselves; only the stale count
+   earns a line of its own. */
+.brief-stale-note {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--func);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.brief-stale-note:hover { text-decoration: underline; }
+
+/* ---- Loose-end sweep ---- */
+.sweep-list { display: flex; flex-direction: column; gap: 10px; max-height: 46vh; overflow-y: auto; }
+.sweep-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 5px);
+  padding: 8px 10px;
+}
+.sweep-title { font-weight: 600; font-size: calc(13px * var(--ui-scale)); }
+.sweep-meta { color: var(--fg-dim); font-size: calc(11px * var(--ui-scale)); font-family: var(--font-data); margin: 2px 0 6px; }
+.sweep-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sweep-actions select, .sweep-actions input[type="date"] {
+  font-size: calc(12px * var(--ui-scale));
+  padding: 3px 6px;
+  background: var(--bg-alt, transparent);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 5px);
+  max-width: 150px;
+}
+.brief-list { display: flex; flex-direction: column; }
+.brief-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-align: left;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  color: var(--fg);
+}
+.brief-item:hover { background: var(--bg-alt); }
+.brief-item.is-stale { border-left-color: var(--func); }
+.brief-item.is-overdue { border-left-color: var(--keyword); }
+.brief-title { font-size: calc(13px * var(--ui-scale)); flex: 0 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
+.brief-meta {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.brief-item.is-stale .brief-meta { color: var(--func); }
+.brief-item.is-overdue .brief-meta { color: var(--keyword); }
+.brief-project { font-size: calc(11px * var(--ui-scale)); flex: none; }
+.brief-tail {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  padding: 8px 12px 0;
+}
+.chip-log { color: var(--string); }
+.chip-log:hover { border-bottom-color: var(--string); }
+/* The unfurling-scroll mark on the today's-file chip sits on the baseline. */
+.chip-log-ico { vertical-align: -1px; margin-right: 4px; }
+
+/* ---- The lazy spin: the ring turns like the control room's hologram ---- */
+
+.ring-rotor {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: ring-spin 150s linear infinite;
+}
+/* Pause while the cursor is on the ring — hover readouts stay put. */
+.ring:hover .ring-rotor { animation-play-state: paused; }
+@keyframes ring-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ring-nb {
+  font-size: calc(11px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  font-weight: 400;
+}
+
+/* ---- On this day ---- */
+
+.dash-onthisday { margin-top: 4px; }
+.otd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4px 28px; }
+.otd-year-label {
+  font-size: calc(12px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--func);
+  padding: 6px 0 2px;
+}
+.otd-more { font-size: calc(11px * var(--ui-scale)); color: var(--fg-dim); padding: 2px 6px; font-family: var(--font-data); }
+
+/* ---- Settings: number inputs that fit the theme (spinners visible) ---- */
+
+.ql-settings-row input[type="number"] {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg);
+  font-family: var(--font-data);
+  font-size: calc(12px * var(--ui-scale));
+  padding: 3px 6px;
+  width: 58px;
+  text-align: right;
+}
+.ql-settings-row input[type="number"]:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+/* The time-glyph picker sits on the settings row next to the label. */
+.ql-settings-row .holo-style-select {
+  width: 170px;
+  font-family: var(--font-data);
+  font-size: calc(12px * var(--ui-scale));
+}
+.dash-nav button.on { color: var(--accent); background: var(--bg-active); }
+
+/* ---- Help: the one page where things get explained ---- */
+
+.help-main { flex: 1; overflow-y: auto; padding: 26px 40px 48px; max-width: 820px; }
+.help-main h2 { margin: 26px 0 6px; font-size: 18px; font-weight: 600; }
+.help-main h2:first-child { margin-top: 0; }
+.help-list {
+  list-style: none;
+  margin: 8px 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.help-list li {
+  position: relative;
+  padding-left: 16px;
+  color: var(--fg);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.help-list li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  color: var(--accent);
+}
+.help-list code {
+  font-family: var(--font-data);
+  font-size: 12px;
+  background: var(--bg-active);
+  padding: 1px 5px;
+}
+.help-list kbd { margin-right: 2px; }
+.help-link { color: var(--accent); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.help-link:hover { color: var(--fg); }

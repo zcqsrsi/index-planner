@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' note: data:; style-src 'self'; script-src 'self'; connect-src 'self' note:; font-src 'self'">
+  <title>Index</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/themes.css">
+  <link rel="stylesheet" href="styles/dashboard.css">
+  <link rel="stylesheet" href="styles/editor.css">
+  <link rel="stylesheet" href="styles/projects.css">
+  <link rel="stylesheet" href="styles/log.css">
+  <link rel="stylesheet" href="styles/threads.css">
+  <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+  <div id="app">
+    <header class="titlebar">
+      <div class="titlebar-inner">
+        <span class="titlebar-title">Index</span>
+        <nav class="topnav" id="topnav"></nav>
+      </div>
+    </header>
+    <div class="shell">
+      <aside class="panel" id="panel"></aside>
+      <main class="main" id="main"></main>
+    </div>
+  </div>
+  <div id="overlays"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

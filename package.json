@@ -1,0 +1,41 @@
+{
+  "name": "index",
+  "productName": "Index",
+  "version": "0.1.0",
+  "description": "Personal index of notes, projects, and change tracking — plain files, no cloud",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "icon": "python3 scripts/make-icon.py",
+    "dist": "electron-builder"
+  },
+  "author": "rsv",
+  "license": "MIT",
+  "build": {
+    "appId": "com.rsv.index",
+    "productName": "Index",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "main/**/*",
+      "renderer/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        { "target": "dmg", "arch": ["arm64"] },
+        { "target": "dir", "arch": ["arm64"] }
+      ],
+      "icon": "build/icon.png"
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.1.1",
+    "electron-builder": "^26.0.12"
+  }
+}

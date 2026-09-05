@@ -1,0 +1,182 @@
+/* Themes — hand-written from the user's actual VSCode theme files
+   (palette ports of a few favourites). The dark eight come first; each has
+   a light twin with the same accent hues re-tuned for paper. */
+
+/* ---------- Index (gold) ---------- */
+:root[data-theme="index"] {
+  --bg: #191c1e; --bg-alt: #20252a; --bg-active: #2c3339;
+  --sidebar-bg: #16191b; --sidebar-fg: #a09a8c;
+  --border: #262b2f; --fg: #d6d2c6; --fg-dim: #807a6c;
+  --accent: #cfa050; --accent-fg: #17130a; --btn-bg: #cfa050;
+  --statusbar-bg: #14171a;
+  --keyword: #cc6a56; --string: #8fa870; --number: #7fa6b8; --type: #6e9a9c; --func: #cfa050;
+  --badge: #7a746a;
+}
+
+/* ---------- Index Bright (default) ---------- */
+:root[data-theme="index-bright"] {
+  --bg: #23292e; --bg-alt: #21272d; --bg-active: #2e363d;
+  --sidebar-bg: #171a1d; --sidebar-fg: #beb6a7;
+  --border: #2c333a; --fg: #f0ede3; --fg-dim: #a1998b;
+  --accent: #8abec0; --accent-fg: #10161a; --btn-bg: #8abec0;
+  --statusbar-bg: #15181c;
+  --keyword: #eb8163; --string: #b0d193; --number: #9dc8da; --type: #8abec0; --func: #eeba63;
+  --badge: #7e8a91;
+}
+
+/* ---------- Index Silver ---------- */
+:root[data-theme="index-silver"] {
+  --bg: #1c2024; --bg-alt: #20252b; --bg-active: #2d3640;
+  --sidebar-bg: #181b1f; --sidebar-fg: #a8b0b8;
+  --border: #2a3038; --fg: #e5e8ec; --fg-dim: #83868c;
+  --accent: #d7dde3; --accent-fg: #14181c; --btn-bg: #d7dde3;
+  --statusbar-bg: #15181b;
+  --keyword: #c2788a; --string: #93b98a; --number: #b79bc4; --type: #6fa0c4; --func: #d7dde3;
+  --badge: #767c84;
+}
+
+/* ---------- Index Bright Alt (jade + gold) ---------- */
+:root[data-theme="index-bright-alt"] {
+  --bg: #231f1a; --bg-alt: #21272d; --bg-active: #2e363d;
+  --sidebar-bg: #171a1d; --sidebar-fg: #beb6a7;
+  --border: #2c281f; --fg: #7ec2a1; --fg-dim: #9c8f7c;
+  --accent: #d3a25e; --accent-fg: #17120a; --btn-bg: #d3a25e;
+  --statusbar-bg: #15181c;
+  --keyword: #c48fd6; --string: #7ec2a1; --number: #7ea8e6; --type: #d3a25e; --func: #3fc7c9;
+  --badge: #7e7660;
+}
+
+/* ---------- Index Silver Alt (ice) ---------- */
+:root[data-theme="index-silver-alt"] {
+  --bg: #1a1c1e; --bg-alt: #20252b; --bg-active: #2d3640;
+  --sidebar-bg: #181b1f; --sidebar-fg: #a8b0b8;
+  --border: #22262b; --fg: #e6ecf0; --fg-dim: #8b9096;
+  --accent: #c9e6f2; --accent-fg: #101a20; --btn-bg: #c9e6f2;
+  --statusbar-bg: #15181b;
+  --keyword: #d48fce; --string: #7fbaa6; --number: #8ab2e8; --type: #52c6c8; --func: #c9e6f2;
+  --badge: #6b7178;
+}
+
+/* ---------- Index Stock ---------- */
+:root[data-theme="index-stock"] {
+  --bg: #191c1e; --bg-alt: #20252a; --bg-active: #2c3339;
+  --sidebar-bg: #16191b; --sidebar-fg: #a09a8c;
+  --border: #262b2f; --fg: #d6d2c6; --fg-dim: #6f6a60;
+  --accent: #cfa050; --accent-fg: #17130a; --btn-bg: #cfa050;
+  --statusbar-bg: #14171a;
+  --keyword: #d6d2c6; --string: #6e9a9c; --number: #cfa050; --type: #6e9a9c; --func: #cfa050;
+  --badge: #7a746a;
+}
+
+/* ---------- Olive (olive / military) ---------- */
+:root[data-theme="olive"] {
+  --bg: #1d1f1a; --bg-alt: #232619; --bg-active: #33361f;
+  --sidebar-bg: #191a17; --sidebar-fg: #abb3bf;
+  --border: #6e5323; --fg: #cfcfcf; --fg-dim: #87907e;
+  --accent: #ced971; --accent-fg: #171a0b; --btn-bg: #5a6843;
+  --statusbar-bg: #5a6843;
+  --keyword: #e45e5e; --string: #c3e88d; --number: #82aaff; --type: #7ebdce; --func: #ced971;
+  --badge: #7f8c50;
+}
+
+/* ---------- Navy (deep navy) ---------- */
+:root[data-theme="navy"] {
+  --bg: #030713; --bg-alt: #101d3d; --bg-active: #1a2c56;
+  --sidebar-bg: #0b152f; --sidebar-fg: #9dafce;
+  --border: #17284f; --fg: #8b9bb6; --fg-dim: #5d6a85;
+  --accent: #007acc; --accent-fg: #ffffff; --btn-bg: #007acc;
+  --statusbar-bg: #0f1c3d;
+  --keyword: #d16969; --string: #ce9178; --number: #b5cea8; --type: #4ec9b0; --func: #dcdcaa;
+  --badge: #007acc;
+}
+
+/* ================ Light twins ================
+   Same hues as the dark eight, darkened enough to hold on paper. */
+
+/* ---------- Index Dawn (gold) ---------- */
+:root[data-theme="index-dawn"] {
+  --bg: #f2efe6; --bg-alt: #eae7dc; --bg-active: #dfdccc;
+  --sidebar-bg: #e9e6db; --sidebar-fg: #6e6a5c;
+  --border: #d8d4c6; --fg: #33302a; --fg-dim: #7d786a;
+  --accent: #b3822a; --accent-fg: #1d1405; --btn-bg: #b3822a;
+  --statusbar-bg: #e5e2d6;
+  --keyword: #b0472e; --string: #5f7d3a; --number: #38697e; --type: #3d7376; --func: #a3760f;
+  --badge: #8c877a;
+}
+
+/* ---------- Index Daylight (default twin) ---------- */
+:root[data-theme="index-daylight"] {
+  --bg: #f4f6f7; --bg-alt: #eaeeef; --bg-active: #dce3e6;
+  --sidebar-bg: #e8ecee; --sidebar-fg: #5c666d;
+  --border: #d3d9dc; --fg: #262b2f; --fg-dim: #7c868c;
+  --accent: #2e8a8d; --accent-fg: #0d1a1c; --btn-bg: #2e8a8d;
+  --statusbar-bg: #e2e7e9;
+  --keyword: #c25438; --string: #57813f; --number: #2e6f8d; --type: #23767a; --func: #a06a12;
+  --badge: #7c868c;
+}
+
+/* ---------- Index Daylight Alt (jade + gold) ---------- */
+:root[data-theme="index-daylight-alt"] {
+  --bg: #f4f1ea; --bg-alt: #ece8de; --bg-active: #e0dccc;
+  --sidebar-bg: #e9e5da; --sidebar-fg: #6b665a;
+  --border: #dcd6c8; --fg: #2c4a3e; --fg-dim: #8a8474;
+  --accent: #a3722c; --accent-fg: #1c1206; --btn-bg: #a3722c;
+  --statusbar-bg: #e5e1d6;
+  --keyword: #8a4bb0; --string: #2e7d5c; --number: #3563b8; --type: #a3722c; --func: #0e8a8d;
+  --badge: #8c8471;
+}
+
+/* ---------- Index Silver Day ---------- */
+:root[data-theme="index-silver-day"] {
+  --bg: #f2f4f6; --bg-alt: #eaedf0; --bg-active: #dde2e7;
+  --sidebar-bg: #e7eaee; --sidebar-fg: #606a74;
+  --border: #d5dade; --fg: #2b3036; --fg-dim: #7d858d;
+  --accent: #3f4750; --accent-fg: #f2f4f6; --btn-bg: #3f4750;
+  --statusbar-bg: #e3e7eb;
+  --keyword: #a84e66; --string: #4f7d49; --number: #7a4fa8; --type: #34699c; --func: #3f4750;
+  --badge: #788088;
+}
+
+/* ---------- Index Silver Frost (ice) ---------- */
+:root[data-theme="index-silver-frost"] {
+  --bg: #f1f5f8; --bg-alt: #e9eef2; --bg-active: #dce4ea;
+  --sidebar-bg: #e6ecf1; --sidebar-fg: #5a6772;
+  --border: #d4dee5; --fg: #26303a; --fg-dim: #75828d;
+  --accent: #2478a0; --accent-fg: #f0f7fb; --btn-bg: #2478a0;
+  --statusbar-bg: #e2e9ee;
+  --keyword: #a34b86; --string: #2e7d68; --number: #33619e; --type: #0e7d80; --func: #2478a0;
+  --badge: #6f7c86;
+}
+
+/* ---------- Index Stock Paper ---------- */
+:root[data-theme="index-stock-paper"] {
+  --bg: #f2efe6; --bg-alt: #eae7dc; --bg-active: #dfdccc;
+  --sidebar-bg: #e9e6db; --sidebar-fg: #6e6a5c;
+  --border: #d8d4c6; --fg: #33302a; --fg-dim: #75705f;
+  --accent: #a87d2a; --accent-fg: #1c1405; --btn-bg: #a87d2a;
+  --statusbar-bg: #e5e2d6;
+  --keyword: #4a463e; --string: #3d7376; --number: #a87d2a; --type: #3d7376; --func: #a87d2a;
+  --badge: #8c877a;
+}
+
+/* ---------- Olive Dawn (olive) ---------- */
+:root[data-theme="olive-dawn"] {
+  --bg: #f3f2e9; --bg-alt: #eaeada; --bg-active: #e0e1cc;
+  --sidebar-bg: #e9e9db; --sidebar-fg: #666e5c;
+  --border: #d0d2bd; --fg: #2e302a; --fg-dim: #6d7462;
+  --accent: #7a852e; --accent-fg: #eef0e2; --btn-bg: #4f5c39;
+  --statusbar-bg: #4f5c39;
+  --keyword: #b23a2e; --string: #567d2e; --number: #3358a8; --type: #2e7286; --func: #6d7a1e;
+  --badge: #75803f;
+}
+
+/* ---------- Navy Dawn (navy, lit) ---------- */
+:root[data-theme="navy-dawn"] {
+  --bg: #eef2f6; --bg-alt: #e4ebf2; --bg-active: #d8e3ee;
+  --sidebar-bg: #e3eaf2; --sidebar-fg: #4f6484;
+  --border: #c9d6e4; --fg: #24354d; --fg-dim: #5d6f8a;
+  --accent: #0067b8; --accent-fg: #ffffff; --btn-bg: #0067b8;
+  --statusbar-bg: #dfe8f1;
+  --keyword: #b23e3e; --string: #a05a3c; --number: #3f7d3a; --type: #0e7d78; --func: #8a6d1c;
+  --badge: #0067b8;
+}

@@ -1,0 +1,280 @@
+/* Base: reset, semantic CSS-variable contract, shell layout.
+   Themes (themes.css) override these variables via :root[data-theme=…]. */
+
+:root {
+  /* Semantic contract — defaults are Index Bright; themes.css overrides. */
+  --bg: #23292e;             /* main surface */
+  --bg-alt: #21272d;         /* hover */
+  --bg-active: #2e363d;      /* active selection / pressed */
+  --sidebar-bg: #171a1d;
+  --sidebar-fg: #beb6a7;
+  --border: #2c333a;
+  --fg: #f0ede3;
+  --fg-dim: #8b8275;
+  --accent: #8abec0;
+  --accent-fg: #10161a;
+  --btn-bg: #8abec0;
+  --statusbar-bg: #15181c;
+  --keyword: #eb8163;       /* loose ends, urgent, "red" */
+  --string: #b0d193;        /* done, "green" */
+  --number: #9dc8da;        /* numeric/info blue */
+  --type: #8abec0;          /* teal */
+  --func: #eeba63;           /* amber highlight */
+  --badge: #7e8a91;
+
+  --radius: 3px;
+  --panel-w: 250px;
+  --panel-fold-w: 30px;
+  --titlebar-h: 40px;
+  --font-ui: 'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  /* Code blocks in pages are always mono. Interface data text (counts,
+     meta, labels) is mono by default but follows the chosen interface
+     font, so Settings → Fonts covers every pixel of UI text. */
+  --font-code: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  --font-data: var(--font-mono);
+  /* Page content (editor + page previews); Settings → Fonts overrides. */
+  --font-editor: var(--font-ui);
+  /* Serif faces for the dress system (Index, Quiet console, Marginalia). */
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+  --editor-font-size: 15px;
+  /* Interface text scale (Settings → Fonts); 1 = designed size. */
+  --ui-scale: 1;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--sidebar-bg);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: calc(14px * var(--ui-scale));
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+[hidden] { display: none !important; }
+
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ---- Title bar (hiddenInset: draggable, traffic lights overlay it) ---- */
+
+.titlebar {
+  height: var(--titlebar-h);
+  flex: none;
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: transparent;
+}
+.titlebar-inner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.titlebar-title {
+  margin-left: 76px; /* clear the traffic lights */
+  font-size: calc(12px * var(--ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+/* ---- Shell: topnav (in the titlebar) | panel | main ---- */
+
+.shell { flex: 1; display: flex; min-height: 0; }
+
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 18px;
+  -webkit-app-region: no-drag;
+}
+.nav-btn {
+  border: none;
+  background: transparent;
+  border-radius: var(--radius);
+  color: var(--fg-dim);
+  font-size: calc(12px * var(--ui-scale));
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 9px;
+  position: relative;
+  transition: color .12s, background .12s;
+}
+.nav-btn .nav-icon { font-size: calc(14px * var(--ui-scale)); }
+.constellation-glyph { vertical-align: -2.5px; }
+.constellation-glyph line { stroke: currentColor; stroke-width: 1; opacity: .65; }
+.constellation-glyph circle { fill: currentColor; }
+.scroll-glyph { vertical-align: -1.5px; }
+.nav-btn:hover { color: var(--fg); background: var(--bg-alt); }
+.nav-btn.active { color: var(--accent); }
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 9px; right: 9px;
+  bottom: -3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+/* Universe switcher — sits left of the view buttons, one ring marker apart. */
+.nav-universe {
+  color: var(--fg);
+  font-weight: 600;
+  letter-spacing: .02em;
+  margin-right: 10px;
+  padding-right: 6px;
+}
+.nav-universe::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+}
+.nav-universe .nav-chev { font-size: 9px; color: var(--fg-dim); margin-left: 2px; }
+.nav-universe:hover .nav-chev { color: var(--fg); }
+
+.panel {
+  width: var(--panel-w);
+  flex: none;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  -webkit-app-region: no-drag;
+}
+.panel-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 6px;
+  font-size: calc(11px * var(--ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.panel-body { flex: 1; overflow-y: auto; padding: 4px 8px 16px; }
+/* Right-side cluster when a pane header holds more than one control
+   (Log: inbox capture + the fold button). */
+.panel-header-tools { display: flex; align-items: center; gap: 2px; }
+
+/* A pane folded to its slim strip (phase 9: every pane collapses). */
+.panel.folded { width: var(--panel-fold-w); }
+.panel.folded .panel-header, .panel.folded .panel-body { display: none; }
+.panel-fold-strip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+}
+.panel-fold-label {
+  writing-mode: vertical-rl;
+  font-size: calc(10px * var(--ui-scale));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.pane-fold-btn {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--fg-dim);
+  font-size: calc(15px * var(--ui-scale));
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.pane-fold-btn:hover { color: var(--accent); }
+
+.main {
+  flex: 1;
+  background: var(--bg);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top-left-radius: 8px;
+}
+
+/* ---- Generic widgets ---- */
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.btn {
+  background: var(--btn-bg);
+  color: var(--accent-fg);
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  font-size: calc(13px * var(--ui-scale));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.btn:hover { filter: brightness(1.1); }
+.btn.secondary {
+  background: var(--bg-active);
+  color: var(--fg);
+}
+.btn.danger { background: var(--keyword); color: #1a0e0a; }
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: calc(13px * var(--ui-scale));
+  color: var(--fg);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+  outline: none;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+
+.icon-btn {
+  color: var(--fg-dim);
+  border-radius: var(--radius);
+  padding: 3px 6px;
+  font-size: calc(14px * var(--ui-scale));
+  cursor: pointer;
+}
+.icon-btn:hover { color: var(--fg); background: var(--bg-alt); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg-dim) 35%, transparent);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+kbd {
+  font-family: var(--font-data);
+  font-size: calc(11px * var(--ui-scale));
+  background: var(--bg-active);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1px 5px;
+  color: var(--fg-dim);
+}

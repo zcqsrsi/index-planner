@@ -1,0 +1,1174 @@
+/* Projects view: journal presentation. Panel spines, Big picture banner,
+   stacked projects → aims → task entries, quick-add. The tasks pane's
+   look is a dress (settings.dress) — one DOM, seven sets of clothes at
+   the bottom of this file, all mixed from theme tokens. */
+
+/* ---- Panel ---- */
+
+.project-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--sidebar-fg);
+  font-size: calc(13px * var(--ui-scale));
+}
+.project-row:hover { background: var(--bg-alt); }
+.project-row.sel { background: var(--bg-active); color: var(--fg); }
+.project-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex: none;
+}
+.project-dot.big { width: 13px; height: 13px; }
+.project-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-count { font-size: calc(11.5px * var(--ui-scale)); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+
+/* The shelf: shelved projects park here, below the active tree — same
+   rows, quieter, under a small uppercase heading. */
+.shelf-section { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+.shelf-head {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  padding: 2px 8px 6px;
+}
+
+.ql-stale-badge {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--func);
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Shell ---- */
+
+.project-detail {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 40px 20vh;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ---- The Big picture ---- */
+/* No accent spine, no callout card — a hairline like everything else
+   on the page. */
+
+.ql-question {
+  border-top: 1px solid var(--border);
+  padding: 12px 0 0;
+  margin-bottom: 20px;
+}
+.ql-question-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ql-question-label {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-weight: 500;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--fg-dim);
+}
+.ql-question-label .bp-date { color: var(--accent); font-weight: 500; }
+.bp-shared {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-family: var(--font-ui);
+  font-style: italic;
+  color: var(--fg-dim);
+}
+.ql-question-actions { display: flex; gap: 10px; }
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--fg-dim);
+  cursor: pointer;
+}
+.link-btn:hover { color: var(--accent); }
+.ql-question-text {
+  margin: 6px 0 0;
+  font-size: calc(16px * var(--ui-scale));
+  line-height: 1.45;
+  color: var(--fg);
+  cursor: pointer;
+}
+.ql-question-text.unset { color: var(--fg-dim); font-style: italic; font-size: calc(14px * var(--ui-scale)); }
+/* The resolution: the answer hangs off its question on a 1px tie —
+   root-and-branch, like the "threaded from" nodes in Threads. Gold is
+   the harvest (--func), never closure: the question stays open. */
+.ql-res-tie { width: 1px; height: calc(16px * var(--ui-scale)); background: var(--border); margin: calc(2px * var(--ui-scale)) 0 0 calc(2px * var(--ui-scale)); }
+.ql-resolution { border-left: 1px solid var(--border); padding-left: calc(12px * var(--ui-scale)); margin-bottom: calc(6px * var(--ui-scale)); }
+.ql-res-label { font-family: var(--font-data); font-size: calc(10.5px * var(--ui-scale)); text-transform: uppercase; letter-spacing: 0.14em; color: var(--func); }
+.ql-res-label .bp-date { color: var(--fg-dim); }
+.ql-res-text { margin: calc(4px * var(--ui-scale)) 0 0; font-size: calc(15px * var(--ui-scale)); line-height: 1.45; color: var(--fg); cursor: pointer; }
+.bq-res { display: block; margin-top: 2px; font-size: calc(11.5px * var(--ui-scale)); color: var(--func); }
+.bq-history { display: flex; flex-direction: column; gap: 8px; }
+.bq-history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: calc(13px * var(--ui-scale));
+  color: var(--fg);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.bq-until { font-size: calc(11.5px * var(--ui-scale)); color: var(--fg-dim); white-space: nowrap; }
+
+/* ---- Toolbar ---- */
+
+.ql-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ql-voice-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.ql-voice-toggle button {
+  background: transparent;
+  border: none;
+  padding: 3px 12px;
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--fg-dim);
+  cursor: pointer;
+}
+.ql-voice-toggle button.on {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.ql-toolbar-hint { font-size: calc(11.5px * var(--ui-scale)); color: var(--fg-dim); }
+
+/* ---- Project sections ---- */
+
+.ql-project {
+  border-top: 1px solid var(--border);
+  padding: 6px 0 14px;
+  margin-bottom: 6px;
+  background: transparent;
+}
+.ql-project.is-scrapped { opacity: 0.75; }
+.ql-project-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 2px;
+}
+.ql-project.is-folded .ql-project-head { padding-bottom: 8px; }
+.ql-fold {
+  background: none;
+  border: none;
+  color: var(--fg-dim);
+  cursor: pointer;
+  font-size: calc(11.5px * var(--ui-scale));
+  width: 16px;
+  flex: none;
+  padding: 0;
+}
+.ql-fold:hover { color: var(--fg); }
+.ql-project-name {
+  font-size: calc(16px * var(--ui-scale));
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  color: var(--fg);
+  flex: 0 1 auto;
+  max-width: 60%;
+  min-width: 120px;
+  padding: 2px 0;
+  /* Long titles wrap instead of clipping — the name is the pane's title. */
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.ql-project-name.is-editing { max-width: none; overflow: visible; }
+.ql-project-name:focus { outline: none; }
+.ql-project.is-scrapped .ql-project-name {
+  text-decoration: line-through;
+  text-decoration-color: var(--keyword);
+  color: var(--fg-dim);
+}
+.ql-project-count {
+  font-size: calc(11.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+  white-space: nowrap;
+}
+.ql-project-head .pm-progress {
+  flex: 1;
+  min-width: 60px;
+  max-width: 200px;
+  height: 3px;
+  background: var(--border);
+  overflow: hidden;
+  margin-left: auto;
+}
+.pm-progress-fill { display: block; height: 100%; }
+.ql-project-menu { flex: none; }
+
+/* ---- Project-head progress glyphs (Settings → Projects → Progress glyph).
+   Drawn in --func, thin strokes, soft glow. Motion dies under
+   prefers-reduced-motion. ---- */
+.pg-nodes, .pg-pulse {
+  display: flex; gap: 8px; align-items: center;
+  flex: none; margin-left: auto;
+}
+.pg-node {
+  width: 7px; height: 7px; transform: rotate(45deg);
+  border: 1px solid color-mix(in srgb, var(--func) 35%, transparent);
+  border-radius: 1px;
+}
+.pg-node.done {
+  background: var(--func); border-color: var(--func);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--func) 60%, transparent),
+              0 0 12px color-mix(in srgb, var(--func) 35%, transparent);
+}
+.pg-comet {
+  position: relative; width: 120px; height: 1px;
+  flex: none; margin-left: auto;
+  background: color-mix(in srgb, var(--func) 25%, transparent);
+}
+.pg-comet::after {
+  content: '';
+  position: absolute; top: -1.5px; left: 0;
+  width: 30px; height: 4px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--func));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--func) 70%, transparent));
+  animation: pg-comet 3.4s ease-in-out infinite alternate;
+}
+@keyframes pg-comet {
+  from { left: -6px; opacity: .35; }
+  to   { left: calc(100% - 24px); opacity: 1; }
+}
+.pg-pulse { gap: 9px; }
+.pg-pdot {
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--func) 35%, transparent);
+}
+.pg-pdot.done {
+  background: var(--func); border-color: var(--func);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--func) 55%, transparent),
+              0 0 14px color-mix(in srgb, var(--func) 30%, transparent);
+}
+.pg-pdot.now { border-color: var(--func); animation: pg-breathe 2.6s ease-in-out infinite; }
+@keyframes pg-breathe {
+  0%, 100% { background: transparent; box-shadow: none; }
+  50%      { background: color-mix(in srgb, var(--func) 75%, transparent);
+             box-shadow: 0 0 9px color-mix(in srgb, var(--func) 55%, transparent); }
+}
+.pg-filament {
+  position: relative; width: 120px; height: 1px;
+  flex: none; margin-left: auto;
+  background: color-mix(in srgb, var(--func) 22%, transparent);
+}
+.pg-filament .pg-fill {
+  position: absolute; inset: -0.5px auto -0.5px 0; width: 0; border-radius: 1px;
+  background: var(--func);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--func) 60%, transparent));
+}
+.pg-filament .pg-head {
+  position: absolute; top: 50%; left: 0; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%; background: var(--func);
+  box-shadow: 0 0 5px var(--func), 0 0 12px color-mix(in srgb, var(--func) 50%, transparent);
+  animation: pg-head 2.8s ease-in-out infinite;
+}
+@keyframes pg-head {
+  0%, 100% { box-shadow: 0 0 4px var(--func), 0 0 8px color-mix(in srgb, var(--func) 40%, transparent); }
+  50%      { box-shadow: 0 0 6px var(--func), 0 0 18px color-mix(in srgb, var(--func) 60%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pg-comet::after, .pg-pdot.now, .pg-filament .pg-head { animation: none; }
+}
+
+.ql-objectives {
+  padding: 2px 2px 4px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ql-objective-add {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--fg-dim);
+  font-size: calc(11.5px * var(--ui-scale));
+  cursor: pointer;
+  padding: 4px 0;
+}
+.ql-objective-add:hover { color: var(--accent); }
+
+/* ---- Objectives ---- */
+
+.ql-obj-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 4px;
+}
+.ql-obj-marker { color: var(--fg-dim); font-size: calc(11.5px * var(--ui-scale)); flex: none; }
+.ql-obj-name {
+  font-size: calc(13px * var(--ui-scale));
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  color: var(--fg);
+  flex: 0 1 auto;
+  max-width: 70%;
+  min-width: 100px;
+  padding: 1px 0;
+  /* Long aim titles wrap — clipping hid the end of the name. */
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.ql-obj-name.is-editing { max-width: none; overflow: visible; }
+.ql-obj-name:focus { outline: none; }
+.ql-objective.is-scrapped .ql-obj-name {
+  text-decoration: line-through;
+  text-decoration-color: var(--keyword);
+  color: var(--fg-dim);
+}
+.ql-obj-meta {
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--fg-dim);
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Task entries ---- */
+
+.ql-tasks { list-style: none; margin: 0; padding: 0; }
+.ql-task {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 5px 6px 5px 0;
+  border-left: 2px solid transparent;
+}
+.ql-task:hover { background: var(--bg-active); }
+/* Drag handle — appears on row hover, same idea as the editor's blocks. */
+.ql-task-drag {
+  flex: none;
+  color: var(--fg-dim);
+  font-size: 10px;
+  letter-spacing: -2px;
+  padding: 0 2px 0 6px;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity .12s;
+  user-select: none;
+}
+.ql-task:hover .ql-task-drag, .ql-task-drag:active { opacity: 1; }
+.ql-task-drag:active { cursor: grabbing; }
+.ql-task.drop-above { box-shadow: inset 0 2px 0 0 var(--accent); }
+.ql-task.drop-below { box-shadow: inset 0 -2px 0 0 var(--accent); }
+.ql-day.drop-below { outline: 2px dashed color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 2px; }
+.ql-task-empty {
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--fg-dim);
+  padding: 4px 0;
+  list-style: none;
+}
+.ql-tick {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: calc(13px * var(--ui-scale));
+  line-height: 1;
+  width: 20px;
+  flex: none;
+  color: var(--fg-dim);
+  padding: 0 0 0 4px;
+  align-self: center;
+}
+/* Tasks number themselves within their day row (1. 2. 3. …) instead of
+   plain bullets — the number IS the tick: click it to cycle status. */
+.ql-day-tasks { counter-reset: taskidx; }
+.ql-tick::before, .ql-tick-spacer::before {
+  counter-increment: taskidx;
+  content: counter(taskidx) ".";
+  font-family: var(--font-data);
+  font-size: calc(11.5px * var(--ui-scale));
+  font-variant-numeric: tabular-nums;
+}
+.ql-tick:hover { color: var(--fg); }
+.ql-tick.done { color: var(--string); }
+.ql-tick.scrapped { color: var(--keyword); }
+.ql-tick.in-progress { color: var(--number); }
+.ql-task-body { flex: 1; min-width: 160px; }
+.ql-task-text { font-size: calc(13px * var(--ui-scale)); color: var(--fg); }
+/* Done reads like the quest log's completed entries: bold, full-strength,
+   struck through — the line drawn over finished work, not faded out. */
+.ql-task.is-done .ql-task-text {
+  color: var(--fg);
+  font-weight: 700;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+.ql-task.is-stale { border-left-color: color-mix(in srgb, var(--func) 55%, transparent); }
+.ql-task.is-stale .ql-task-stamp { color: var(--func); }
+.ql-task.is-scrapped .ql-task-text {
+  text-decoration: line-through;
+  text-decoration-color: var(--keyword);
+  color: var(--fg-dim);
+}
+.ql-task-stamp {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  white-space: nowrap;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.ql-task-overdue {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--keyword);
+  flex: none;
+}
+.ql-tick-spacer { width: 20px; flex: none; }
+/* Deadlines live in the task's ⋯ menu; the row shows a squared outline. */
+.ql-task-due-pill {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px 8px;
+  flex: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ql-task-due-pill.is-overdue {
+  color: var(--keyword);
+  border-color: color-mix(in srgb, var(--keyword) 45%, transparent);
+}
+/* Tags ride inside the task body, after the title — squared outline chips,
+   not filled pills. */
+.ql-task-tags { display: inline-flex; gap: 5px; margin-left: 7px; vertical-align: 1px; }
+.ql-tag {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+/* Open tasks from earlier days, riding in today's row until done. */
+.ql-task-carried {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--func);
+  flex: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* Their quiet echo in their own day's row. */
+.ql-task-open-hint {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--fg-dim);
+  font-style: italic;
+  flex: none;
+}
+.ql-task-reason {
+  flex-basis: 100%;
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--keyword);
+  opacity: 0.85;
+  padding-left: 30px;
+}
+.ql-task.is-flash { animation: ql-flash 2.2s ease-out; }
+@keyframes ql-flash {
+  0%, 60% { background: color-mix(in srgb, var(--func) 16%, transparent); }
+  100% { background: transparent; }
+}
+
+/* ---- Add rows ---- */
+
+.ql-task-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  padding-left: 24px;
+}
+.ql-task-add .ql-add-title { flex: 1; min-width: 160px; }
+
+/* ---- Day rows: the planner, like the original OneNote table ----
+   One row per day — tasks written that day on the left, the day's note and
+   files on the right. Open tasks from earlier days ride in today's row
+   with an amber "from" mark. */
+
+.ql-days { display: flex; flex-direction: column; }
+.ql-day {
+  padding: 2px 0 10px 12px;
+}
+.ql-day-head { margin-bottom: 6px; }
+.ql-day-date {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+.ql-day.is-today .ql-day-date { color: var(--accent); }
+/* The day pulse: fills clockwise as the day does. Set via CSSOM (--frac)
+   every second; off entirely from Settings → Projects. */
+.day-pulse {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: 1px;
+  background: conic-gradient(var(--accent) calc(var(--frac, 0) * 360deg), var(--border) 0);
+}
+.ql-day-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 6px 22px;
+  align-items: start;
+}
+/* The tasks pane folds and resizes; stack the columns when it runs narrow. */
+.fp-tasks { container-type: inline-size; }
+@container (max-width: 620px) {
+  .ql-day-cols { grid-template-columns: 1fr; }
+}
+.ql-day-tasks { list-style: none; margin: 0; padding: 0; }
+.ql-day-side {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 2px;
+}
+/* Day notes sit flat on the page — a dashed rule divides tasks from note. */
+.ql-day-note {
+  width: 100%;
+  resize: vertical;
+  min-height: 52px;
+  background: transparent;
+  border: none;
+  border-top: 1px dashed var(--border);
+  border-radius: 0;
+  color: var(--fg);
+  font-family: var(--font-editor);
+  font-size: calc(13px * var(--ui-scale));
+  line-height: 1.55;
+  padding: 6px 0 0;
+}
+.ql-day-note:focus { outline: none; border-top-color: var(--accent); }
+.ql-day-note::placeholder { color: var(--fg-dim); }
+/* Older days read back only — the diary doesn't rewrite itself. */
+.ql-day-note-ro {
+  background: transparent;
+  border: none;
+  border-top: 1px dashed var(--border);
+  color: var(--fg);
+  font-family: var(--font-editor);
+  font-size: calc(13px * var(--ui-scale));
+  line-height: 1.55;
+  padding: 6px 0 0;
+  white-space: pre-wrap;
+}
+.ql-day-files { display: flex; flex-wrap: wrap; gap: 5px; }
+.ql-day-file {
+  font-size: calc(10.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  color: var(--number);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--number) 40%, transparent);
+  border-radius: var(--radius);
+  padding: 3px 8px;
+  cursor: pointer;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ql-day-file:hover { border-color: var(--number); }
+.ql-day-file.add {
+  color: var(--fg-dim);
+  border-style: dashed;
+  border-color: var(--border);
+}
+.ql-day-file.add:hover { color: var(--fg); border-color: var(--fg-dim); }
+
+.ql-project-add {
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px dashed var(--border);
+  color: var(--fg-dim);
+  font-size: calc(13px * var(--ui-scale));
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.ql-project-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Quick-add modal ---- */
+.qa-row { display: flex; gap: 8px; }
+.qa-row select, .qa-row input { flex: 1; min-width: 0; }
+
+/* ---- Settings ---- */
+.ql-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+}
+/* Linked notebook marker on a project section. */
+.ql-project-nb {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-dim);
+  font-size: calc(11.5px * var(--ui-scale));
+  font-family: var(--font-data);
+  padding: 0 0 1px;
+  cursor: pointer;
+}
+.ql-project-nb:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- Phase 9: the merged view — three panes, groups, notes ---- */
+
+/* Project groups in the sidebar: colored, nestable, foldable. */
+.proj-group { }
+.proj-group-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 6px;
+  margin-top: 6px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--fg-dim);
+  font-size: calc(11.5px * var(--ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  user-select: none;
+}
+.proj-group-row:hover { color: var(--fg); background: var(--bg-alt); }
+.proj-group-row.is-nested { padding-left: 18px; font-weight: 500; text-transform: none; letter-spacing: 0; font-size: calc(11.5px * var(--ui-scale)); }
+.proj-group-tw { font-size: calc(10.5px * var(--ui-scale)); width: 10px; flex: none; }
+.proj-group-dot { width: 8px; height: 8px; border-radius: 8px; flex: none; }
+.proj-group-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj-group-count { font-size: calc(10.5px * var(--ui-scale)); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+
+/* The tasks + notes split inside #main. */
+.fp-main { flex: 1; display: flex; min-width: 0; min-height: 0; }
+.fp-tasks {
+  width: 460px;
+  flex: none;
+  min-height: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding: 16px 18px 60px;
+  overscroll-behavior: contain;
+}
+.fp-tasks-inner { max-width: 720px; }
+
+/* Notes defaults folded: the planner owns the full width until asked to
+   make room. The inner column stays capped and centered so day rows don't
+   stretch into a read across a wide window. */
+.fp-main.fold-notes .fp-tasks { flex: 1; width: auto; }
+.fp-main.fold-notes .fp-tasks-inner { max-width: 780px; margin: 0 auto; }
+.fp-notes {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.fp-notes-inner { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.fp-notes-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px 8px;
+  font-size: calc(11.5px * var(--ui-scale));
+  color: var(--fg-dim);
+}
+.fp-notes-title { font-weight: 600; }
+.fp-notes-crumb { color: var(--fg-dim); font-family: var(--font-data); font-size: calc(11.5px * var(--ui-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-notes-host { flex: 1; min-height: 0; overflow-y: auto; }
+.fp-notes-index { flex: 1; overflow-y: auto; padding: 6px 20px 40px; }
+.fp-notes-obj-label {
+  font-size: calc(11.5px * var(--ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  padding: 14px 4px 4px;
+}
+/* Aim groups in the notes index — spacing only. The aim's title already
+   leads its block in the tasks pane; repeating it here was duplication. */
+.fp-notes-aim { padding-bottom: 14px; }
+.fp-notes-aim + .fp-notes-aim { border-top: 1px solid var(--border); padding-top: 8px; }
+/* The task-rename box: grows with the text instead of scrolling it away. */
+.task-rename-box {
+  width: 100%;
+  min-height: 64px;
+  resize: none;
+  font-family: inherit;
+  font-size: calc(13px * var(--ui-scale));
+  line-height: 1.5;
+}
+.fp-notes-sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 4px 2px;
+  cursor: pointer;
+  color: var(--fg-dim);
+  font-size: calc(11.5px * var(--ui-scale));
+}
+.fp-notes-sec-head:hover { color: var(--accent); }
+.fp-notes-sec-name { font-weight: 600; }
+.fp-notes-sec-count { font-size: calc(11.5px * var(--ui-scale)); }
+.fp-notes-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: calc(13px * var(--ui-scale));
+  text-align: left;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.fp-notes-page:hover { background: var(--bg-active); }
+.fp-notes-page.sel { background: var(--bg-active); }
+.fp-notes-page-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-notes-empty { font-size: calc(11.5px * var(--ui-scale)); color: var(--fg-dim); padding: 2px 8px 4px; }
+
+/* Folded slim strips for the two main-side panes. */
+.fp-fold-strip {
+  flex: none;
+  width: var(--panel-fold-w);
+  border: none;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg-dim);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+}
+.fp-fold-strip:hover { color: var(--accent); background: var(--bg-alt); }
+.fp-fold-label {
+  writing-mode: vertical-rl;
+  font-size: calc(10.5px * var(--ui-scale));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.fp-main.fold-tasks .fp-fold-strip[data-fold="tasks"],
+.fp-main.fold-notes .fp-fold-strip[data-fold="notes"] { border-right: 1px solid var(--border); }
+.fp-main.fold-notes .fp-fold-strip[data-fold="notes"] { border-left: 1px solid var(--border); border-right: none; }
+.fp-fold-edge { align-self: stretch; border-right: 1px solid var(--border); border-radius: 0; }
+
+/* Sub-objectives: the OneNote-table tier between objective and task —
+   an indented hairline, not a box. */
+.fp-sub {
+  margin: 6px 0 12px 20px;
+  padding: 0 0 0 16px;
+  border-left: 2px solid var(--border);
+}
+.fp-sub-head { display: flex; align-items: center; gap: 8px; }
+.fp-sub-marker { color: var(--fg-dim); font-size: calc(11.5px * var(--ui-scale)); flex: none; }
+.fp-sub-name {
+  flex: 1;
+  min-width: 60px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--fg);
+  font-size: calc(13px * var(--ui-scale));
+  font-weight: 600;
+  padding: 2px 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.fp-sub-name.is-editing { overflow: visible; }
+.fp-sub-name:hover { border-bottom-color: var(--border); }
+.fp-sub-name:focus { outline: none; border-bottom-color: var(--accent); }
+/* Aim importance — a quiet word next to the meta, only when it isn't normal. */
+.ql-imp-pill {
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--fg-dim);
+  flex: none;
+}
+.ql-imp-pill.high { color: var(--number); border-color: color-mix(in srgb, var(--number) 45%, transparent); }
+.ql-imp-pill.urgent { color: var(--keyword); border-color: color-mix(in srgb, var(--keyword) 45%, transparent); }
+.ql-imp-pill.low { opacity: 0.75; }
+/* Drag-reordering: the grabbed row fades, the landing spot shows a bar. */
+.fp-sub-head[draggable] { cursor: grab; }
+.fp-sub.is-dragging { opacity: 0.35; }
+.fp-sub.drop-above { box-shadow: inset 0 2px 0 var(--accent); }
+.fp-sub.drop-below { box-shadow: inset 0 -2px 0 var(--accent); }
+/* Dates written into names, heated by proximity. */
+.date-hot { color: var(--keyword); font-weight: 600; }
+.date-warm { color: var(--number); }
+.date-cold { color: var(--fg-dim); text-decoration: underline dotted; text-underline-offset: 3px; }
+.fp-sub-meta { font-size: calc(11.5px * var(--ui-scale)); color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+.fp-sub-notes {
+  border: none;
+  background: transparent;
+  color: var(--fg-dim);
+  font-size: calc(11.5px * var(--ui-scale));
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  flex: none;
+}
+.fp-sub-notes:hover, .fp-sub-notes.on { color: var(--accent); background: var(--bg-active); }
+.ql-sub-add {
+  border: none;
+  background: transparent;
+  color: var(--fg-dim);
+  font-size: calc(11.5px * var(--ui-scale));
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.ql-sub-add:hover { color: var(--accent); }
+
+/* Afloat + General blocks. */
+.fp-afloat .ql-obj-head, .fp-general .ql-obj-head { padding-left: 0; }
+.ql-obj-name-static {
+  font-size: calc(13px * var(--ui-scale));
+  font-weight: 600;
+  color: var(--fg);
+}
+.fp-afloat .ql-day { padding-bottom: 2px; }
+/* The unfiled box tucks away: its header is the toggle. */
+.afloat-head { cursor: pointer; }
+.afloat-head .ql-obj-marker { transition: color .12s; }
+.afloat-head:hover .ql-obj-marker, .afloat-head:hover .ql-obj-name-static { color: var(--accent); }
+.fp-afloat.is-folded { padding: 2px 0; }
+.fp-afloat.is-folded .ql-obj-meta { font-style: italic; }
+
+/* Colour pickers in the recolor modals. */
+.color-row { display: flex; gap: 8px; flex-wrap: wrap; padding: 6px 0; }
+.color-swatch {
+  width: 26px; height: 26px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 15%, transparent);
+}
+.color-swatch:hover { transform: scale(1.12); }
+
+/* ==================================================================
+   Dresses — Settings → Projects picks the cut; the class lands on
+   .fp-tasks in renderMain. One DOM, seven sets of clothes, all mixed
+   from theme tokens. What changes per dress: the type (serif reading
+   text vs mono instrumentation), the rules (hairline / dotted /
+   bracket / tab), and how loudly the chrome speaks (chips, buttons).
+   Real aims select as .ql-objective[data-objective]:not([data-objective=""])
+   — Unfiled carries data-objective="" and General has no attribute. */
+
+/* ---- Quiet console (default) — serif reading text, dotted aim rules,
+   mono numerals before each aim. No boxes, no brackets. ---- */
+
+.fp-tasks.dress-quiet-console { font-family: var(--font-serif); line-height: 1.65; }
+.fp-tasks.dress-quiet-console .ql-objectives { counter-reset: aimidx; }
+.fp-tasks.dress-quiet-console .ql-objective[data-objective]:not([data-objective=""]) { counter-increment: aimidx; }
+.fp-tasks.dress-quiet-console .ql-objective[data-objective]:not([data-objective=""]) > .ql-obj-head::before {
+  content: counter(aimidx, decimal-leading-zero);
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+.fp-tasks.dress-quiet-console .ql-objective[data-objective]:not([data-objective=""]) > .ql-obj-head {
+  border-bottom: 1px dotted var(--border);
+  padding-bottom: 8px;
+}
+.fp-tasks.dress-quiet-console .ql-day-date::after {
+  content: "  ······················";
+  color: var(--border);
+  letter-spacing: 0;
+}
+.fp-tasks.dress-quiet-console .ql-day-note,
+.fp-tasks.dress-quiet-console .ql-day-note-ro { color: var(--fg-dim); }
+.fp-tasks.dress-quiet-console .ql-sub-add,
+.fp-tasks.dress-quiet-console .ql-objective-add {
+  border: 1px solid var(--border);
+  padding: 4px 11px;
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-quiet-console .ql-sub-add:hover,
+.fp-tasks.dress-quiet-console .ql-objective-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Console serif — the fusion, structure-forward: corner brackets
+   frame the Big picture and every aim, serif reading text throughout. ---- */
+
+.fp-tasks.dress-console-serif { font-family: var(--font-serif); line-height: 1.65; }
+.fp-tasks.dress-console-serif .ql-question { border-top: none; position: relative; padding: 12px 16px 14px; }
+.fp-tasks.dress-console-serif .ql-question::before,
+.fp-tasks.dress-console-serif .ql-question::after,
+.fp-tasks.dress-console-serif .ql-objective[data-objective]:not([data-objective=""])::before,
+.fp-tasks.dress-console-serif .ql-objective[data-objective]:not([data-objective=""])::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  border: 0 solid var(--border);
+}
+.fp-tasks.dress-console-serif .ql-question::before,
+.fp-tasks.dress-console-serif .ql-objective[data-objective]:not([data-objective=""])::before {
+  top: 0; left: 0;
+  border-top-width: 1px; border-left-width: 1px;
+}
+.fp-tasks.dress-console-serif .ql-question::after,
+.fp-tasks.dress-console-serif .ql-objective[data-objective]:not([data-objective=""])::after {
+  bottom: 0; right: 0;
+  border-bottom-width: 1px; border-right-width: 1px;
+}
+.fp-tasks.dress-console-serif .ql-objective[data-objective]:not([data-objective=""]) { position: relative; padding: 12px 16px 14px; }
+.fp-tasks.dress-console-serif .project-dot.big {
+  border-radius: 0;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.fp-tasks.dress-console-serif .ql-day-date::after {
+  content: "  ······················";
+  color: var(--border);
+  letter-spacing: 0;
+}
+.fp-tasks.dress-console-serif .ql-day-note,
+.fp-tasks.dress-console-serif .ql-day-note-ro {
+  border-top: none;
+  border-left: 1px solid var(--border);
+  padding: 0 0 0 12px;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-console-serif .ql-sub-add,
+.fp-tasks.dress-console-serif .ql-objective-add {
+  border: 1px solid var(--border);
+  padding: 4px 11px;
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-console-serif .ql-sub-add:hover,
+.fp-tasks.dress-console-serif .ql-objective-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Index — the tightened serif cut: hairlines between aims, the
+   Unfiled block boxed, everything else open. ---- */
+
+.fp-tasks.dress-index { font-family: var(--font-serif); line-height: 1.6; }
+.fp-tasks.dress-index .ql-objective[data-objective]:not([data-objective=""]) { border-top: 1px solid var(--border); padding-top: 16px; }
+.fp-tasks.dress-index .fp-general { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 14px; }
+.fp-tasks.dress-index .fp-afloat { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+.fp-tasks.dress-index .ql-task-carried { font-style: italic; font-family: var(--font-serif); }
+.fp-tasks.dress-index .ql-day-note,
+.fp-tasks.dress-index .ql-day-note-ro { color: var(--fg-dim); }
+.fp-tasks.dress-index .ql-sub-add,
+.fp-tasks.dress-index .ql-objective-add {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 12px;
+  color: var(--fg-dim);
+  font-size: calc(13px * var(--ui-scale));
+}
+.fp-tasks.dress-index .ql-sub-add:hover,
+.fp-tasks.dress-index .ql-objective-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Console — full instrumentation: everything mono, brackets on
+   aims, dashed day leaders, squared chrome. ---- */
+
+.fp-tasks.dress-console { font-family: var(--font-data); line-height: 1.7; }
+.fp-tasks.dress-console .ql-question { border-top: none; border-bottom: 1px solid var(--border); padding: 0 0 14px; }
+.fp-tasks.dress-console .ql-objective[data-objective]:not([data-objective=""]) { position: relative; padding: 10px 14px 12px; }
+.fp-tasks.dress-console .ql-objective[data-objective]:not([data-objective=""])::before,
+.fp-tasks.dress-console .ql-objective[data-objective]:not([data-objective=""])::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  border: 0 solid var(--border);
+}
+.fp-tasks.dress-console .ql-objective[data-objective]:not([data-objective=""])::before {
+  top: 0; left: 0;
+  border-top-width: 1px; border-left-width: 1px;
+}
+.fp-tasks.dress-console .ql-objective[data-objective]:not([data-objective=""])::after {
+  bottom: 0; right: 0;
+  border-bottom-width: 1px; border-right-width: 1px;
+}
+.fp-tasks.dress-console .project-dot.big {
+  border-radius: 0;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.fp-tasks.dress-console .ql-day-date::after {
+  content: " ─────────────";
+  color: var(--border);
+  letter-spacing: 0;
+}
+.fp-tasks.dress-console .ql-day-note,
+.fp-tasks.dress-console .ql-day-note-ro {
+  border-top: none;
+  border-left: 1px solid var(--border);
+  padding: 0 0 0 12px;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-console .ql-sub-add,
+.fp-tasks.dress-console .ql-objective-add {
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  font-size: calc(10.5px * var(--ui-scale));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-console .ql-sub-add:hover,
+.fp-tasks.dress-console .ql-objective-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Ledger — light bookkeeping: hairline rules, the Big picture
+   ruled off from above, serif buttons with a fill. ---- */
+
+.fp-tasks.dress-ledger { font-family: var(--font-serif); line-height: 1.6; }
+.fp-tasks.dress-ledger .ql-question { border-top: none; border-bottom: 1px solid var(--border); padding: 0 0 14px; }
+.fp-tasks.dress-ledger .ql-objective[data-objective]:not([data-objective=""]) > .ql-obj-head {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.fp-tasks.dress-ledger .ql-task-carried { font-style: italic; font-family: var(--font-serif); }
+.fp-tasks.dress-ledger .ql-day-note,
+.fp-tasks.dress-ledger .ql-day-note-ro { color: var(--fg-dim); }
+.fp-tasks.dress-ledger .ql-sub-add,
+.fp-tasks.dress-ledger .ql-objective-add {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-alt);
+  padding: 4px 12px;
+  color: var(--fg-dim);
+  font-size: calc(13px * var(--ui-scale));
+}
+.fp-tasks.dress-ledger .ql-sub-add:hover,
+.fp-tasks.dress-ledger .ql-objective-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Dossier — stamped and filed: double rule under the project
+   head, a stamped status chip, aim names riding the rule as tabs. ---- */
+
+.fp-tasks.dress-dossier { font-family: var(--font-serif); line-height: 1.6; }
+.fp-tasks.dress-dossier .ql-project-head { border-bottom: 3px double var(--border); padding-bottom: 12px; }
+.fp-tasks.dress-dossier .ql-obj-head {
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.fp-tasks.dress-dossier .ql-obj-name,
+.fp-tasks.dress-dossier .ql-obj-name-static {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 4px 16px 5px;
+  margin-bottom: -1px;
+}
+.fp-tasks.dress-dossier .ql-day-date::after {
+  content: "  ───────────────";
+  color: var(--border);
+  letter-spacing: 0;
+}
+.fp-tasks.dress-dossier .ql-day-note,
+.fp-tasks.dress-dossier .ql-day-note-ro {
+  border-top: none;
+  border-left: 2px solid var(--border);
+  padding: 0 0 0 12px;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-dossier .ql-sub-add,
+.fp-tasks.dress-dossier .ql-objective-add {
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  padding: 4px 11px;
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-dossier .ql-sub-add:hover,
+.fp-tasks.dress-dossier .ql-objective-add:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- Marginalia — the quiet page: no progress bar, the Big picture
+   an italic epigraph, notes in the margin's voice. ---- */
+
+.fp-tasks.dress-marginalia { font-family: var(--font-serif); line-height: 1.7; }
+.fp-tasks.dress-marginalia .pm-progress,
+.fp-tasks.dress-marginalia .pg-nodes,
+.fp-tasks.dress-marginalia .pg-comet,
+.fp-tasks.dress-marginalia .pg-pulse,
+.fp-tasks.dress-marginalia .pg-filament { display: none; }
+.fp-tasks.dress-marginalia .ql-question-text {
+  font-style: italic;
+  font-size: calc(15px * var(--ui-scale));
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-marginalia .ql-obj-name { font-size: calc(18px * var(--ui-scale)); font-weight: 400; letter-spacing: 0.01em; }
+.fp-tasks.dress-marginalia .ql-obj-name-static { font-size: calc(16px * var(--ui-scale)); font-weight: 400; font-style: italic; }
+.fp-tasks.dress-marginalia .fp-sub-name { font-style: italic; font-weight: 400; font-size: calc(14px * var(--ui-scale)); color: var(--fg-dim); }
+.fp-tasks.dress-marginalia .ql-task-carried { font-style: italic; font-family: var(--font-serif); }
+.fp-tasks.dress-marginalia .ql-day-note,
+.fp-tasks.dress-marginalia .ql-day-note-ro { border-top: none; padding: 0; font-style: italic; }
+.fp-tasks.dress-marginalia .ql-sub-add,
+.fp-tasks.dress-marginalia .ql-objective-add {
+  font-family: var(--font-data);
+  font-size: calc(10.5px * var(--ui-scale));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.fp-tasks.dress-marginalia .ql-sub-add:hover,
+.fp-tasks.dress-marginalia .ql-objective-add:hover { color: var(--accent); }

@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.png
+!build/icon.png
+data/
+dist/
+.Rhistory
+.claude/
+maxresdefault.jpg
+mockup-*.html
+index-*.dmg
+attic/
+PLAN.md
+WRITING.md
