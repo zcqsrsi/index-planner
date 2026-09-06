@@ -44,7 +44,7 @@ export function renderMain(mainEl) {
       </div>
 
       <h2 id="logo">Logo</h2>
-      <p class="settings-sub">The mark in the Dock — the segment withdrawn from the shelf, in sixteen finishes. The choice repaints the Dock icon live.</p>
+      <p class="settings-sub">The mark in the Dock — the segment withdrawn from the shelf, in seventeen finishes. The choice repaints the Dock icon live.</p>
       <div class="ql-settings-row">
         <span>Dock logo</span>
         <div class="logo-pick">
@@ -301,7 +301,7 @@ export function renderMain(mainEl) {
   wireJournal(mainEl.querySelector('#journal-box'));
 }
 
-// ---- Logo: a dropdown of the sixteen finishes; Dock icon repaints live ----
+// ---- Logo: a dropdown of the seventeen finishes; Dock icon repaints live ----
 
 function wireLogos(mainEl) {
   const select = mainEl.querySelector('#logo-select');

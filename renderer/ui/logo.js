@@ -1,8 +1,10 @@
 // The Index mark: a heavy ring with one open slot, the withdrawn segment
 // pulled out of the shelf like a book. Seventeen finishes — colour slots are
 // plate (the squircle), ring (the shelf), seg (the pulled segment), glow.
-// Settings → Logo picks one; it repaints the macOS Dock icon live. The
-// first finish is the default.
+// Monitor, the chrome finish, swaps the flat plate/ring colours for
+// plateGrad/markGrad: top-to-bottom metal stops, rendered as gradients in
+// the settings grid and the Dock PNG alike. Settings → Logo picks one; it
+// repaints the macOS Dock icon live. The first finish is the default.
 
 export const LOGOS = [
   { id: 'gunmetal-ice', name: 'Array', plate: '#3a4148', ring: '#bfe9f5', glow: 'rgba(191,233,245,.4)' },
@@ -21,6 +23,13 @@ export const LOGOS = [
   { id: 'blue-violet-pull', name: 'Blue + Violet Pull', plate: '#92989e', ring: '#8fc3d8', seg: '#a98ef2', glow: 'rgba(169,142,242,.5)' },
   { id: 'glacier-duo', name: 'Glacier Duo', plate: '#1f262c', ring: '#6ed2f2', seg: '#8ef0b4', glow: 'rgba(110,210,242,.55)' },
   { id: 'desert', name: 'Desert', plate: '#7d6647', ring: '#e8b869', glow: 'rgba(232,184,105,.4)' },
+  // Monitor: a steel body with a blue eye. plateGrad is the shell, darker
+  // steel that falls to a cool floor so the eye carries the plate; markGrad
+  // is the eye, electric mid-blue opening to ice and closing to a deep
+  // floor. ring (flat blue) is the glow colour and the flat fallback.
+  { id: 'monitor', name: 'Monitor', plate: '#8d97a2', ring: '#2e7fe0', glow: 'rgba(120,190,255,.45)',
+    plateGrad: ['#b9c1cb', '#8d97a2', '#6f7984'],
+    markGrad: ['#aee0ff', '#2e7fe0', '#123f8f'] },
 ];
 
 export const DEFAULT_LOGO = LOGOS[0];
@@ -57,18 +66,30 @@ function bandW(aDeg) {
 let filterSeq = 0;
 export function logoSvgMarkup(logo, size = 64) {
   const fid = `logo-glow-${++filterSeq}`;
+  const gid = `logo-grad-${filterSeq}`;
   const glow = logo.glow
     ? `<filter id="${fid}" x="-30%" y="-30%" width="160%" height="160%">
          <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="${logo.ring}" flood-opacity="${glowOpacity(logo)}"/>
        </filter>`
     : '';
+  // Metal finishes: plate shades top-to-bottom across the squircle; the
+  // mark shades across the ring band in its own (rotated) space, so the
+  // chrome reads as lit from above whatever the tilt.
+  const grad = (id, stops, y1, y2) =>
+    `<linearGradient id="${id}" x1="100" y1="${y1}" x2="100" y2="${y2}" gradientUnits="userSpaceOnUse">` +
+    stops.map((c, i) => `<stop offset="${(i / (stops.length - 1)).toFixed(3)}" stop-color="${c}"/>`).join('') +
+    '</linearGradient>';
+  const defs = (logo.plateGrad ? grad(`${gid}-p`, logo.plateGrad, 30, 170) : '') +
+    (logo.markGrad ? grad(`${gid}-m`, logo.markGrad, 42, 158) : '');
+  const plateFill = logo.plateGrad ? `url(#${gid}-p)` : logo.plate;
+  const markFill = logo.markGrad ? `url(#${gid}-m)` : logo.ring;
   const groupAttrs = logo.glow ? ` filter="url(#${fid})"` : '';
   return `<svg viewBox="0 0 200 200" width="${size}" height="${size}" aria-label="${logo.name}">
-    ${glow}
-    <rect x="18" y="18" width="164" height="164" rx="37" fill="${logo.plate}"/>
+    ${glow}${defs}
+    <rect x="18" y="18" width="164" height="164" rx="37" fill="${plateFill}"/>
     <g transform="rotate(${TILT} 100 100)"${groupAttrs}>
-      <path d="${bandPathD()}" fill="${logo.ring}"/>
-      <path d="${piecePathD()}" fill="${logo.seg || logo.ring}"/>
+      <path d="${bandPathD()}" fill="${markFill}"/>
+      <path d="${piecePathD()}" fill="${logo.seg || markFill}"/>
     </g>
   </svg>`;
 }
@@ -114,6 +135,13 @@ export function logoPngDataUrl(logo, px = 1024) {
   const ctx = canvas.getContext('2d');
   const scale = (px * 0.805) / 164; // plate 824/1024 ≈ 82.4%
   const cx = px / 2;
+  // Metal stops as a canvas gradient — coordinates are mockup units, so it
+  // rides whatever transform is current when it is filled with.
+  const vGrad = (y1, y2, stops) => {
+    const g = ctx.createLinearGradient(100, y1, 100, y2);
+    stops.forEach((c, i) => g.addColorStop(i / (stops.length - 1), c));
+    return g;
+  };
 
   // Plate (unrotated squircle), mockup 18..182 → canvas.
   ctx.save();
@@ -122,7 +150,7 @@ export function logoPngDataUrl(logo, px = 1024) {
   ctx.translate(-100, -100);
   ctx.beginPath();
   ctx.roundRect(18, 18, 164, 164, 37);
-  ctx.fillStyle = logo.plate;
+  ctx.fillStyle = logo.plateGrad ? vGrad(18, 182, logo.plateGrad) : logo.plate;
   ctx.fill();
   ctx.restore();
 
@@ -137,9 +165,10 @@ export function logoPngDataUrl(logo, px = 1024) {
     ctx.shadowBlur = px * 0.008;
   }
   const fillPath = (pathD) => ctx.fill(new Path2D(pathD), 'nonzero');
-  ctx.fillStyle = logo.ring;
+  const markFill = logo.markGrad ? vGrad(42, 158, logo.markGrad) : logo.ring;
+  ctx.fillStyle = markFill;
   fillPath(bandPathD());
-  ctx.fillStyle = logo.seg || logo.ring;
+  ctx.fillStyle = logo.seg || markFill;
   fillPath(piecePathD());
   ctx.restore();
 
