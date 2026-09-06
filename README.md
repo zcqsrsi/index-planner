@@ -1,22 +1,13 @@
-# Index: tackle sustained, exploratory projects with trackable tasks and organised notes.
+# Index: approach sustained exploratory projects with trackable tasks and organised notes.
 
-Index is a project planner and notebook for macOS that reacts to the tasks you create. The motivation was to create a notebook and planner to help break down research tasks with broad, open-ended goals into tangible sub objectives all while having those objects tracked- so you never lose your bearings. Everything was designed with a calm, accessible and productive working environment in mind. 
+Index is a project planner and notebook for macOS that dynamically reacts to the work you need to do. The motivation was to create a notebook and planner to help break down research tasks with broad, open-ended goals into tangible sub objectives all while having those objects tracked- so you never lose your bearings. 
 
-Instead of long lists of overdue reminders, I chose more abstract ways of presenting your workload. The focal point of Index is instead a floating ring that tracks your projects, allowing you to get to grips with the tasks ahead with a simple glance. 
+Everything was designed with the aim of creating a calm, pleasant and productive workspace. Therefore, instead of traditional long lists of overdue reminders(!), Index includes more abstract ways to present your workload. 
 
-As your projects evolve, the threads of tasks, notes and their “big-picture” questions are recorded in a constellation, giving a birds-eye view of the history of your work and any revisions, changes in direction, or resolved questions that you made.
+The focal point is a floating ring that tracks your projects, allowing you to get to grips with the tasks ahead with a simple glance. As your projects evolve, the threads of their tasks, notes and the “big-picture” questions they aim to answer are stored in a constellation (threads: sky view), giving you the big picture of your work and any revisions, changes in direction, or resolved questions so far.
 
-
-More Details: 
-Projects are broken into aims and sub-objectives- which each have a day planner and block editor for the notes you want to make along the way to reaching those objectives. 
-The Map is a dashboard that
-monitors everything for overdue work. 
-
-Everything lives as plain JSON and Markdown
-in one `data/` folder — no account, no sync, no server. You can direct your backups to anywhere you like (such as an iCloud folder).
-
-
-Big picture statements per project (or shared across a group), with a full revision history
+## Features:
+- Big picture statements per project (or shared across a group), with a full revision history
 - Block editor with page links (`@`), inline tags (`#tag`), undo/redo, images, page history
 - The Log: one automatic case file per day, with a capture inbox (⌘J)
 - Threads: a replayable timeline of everything, backlinks included
@@ -25,6 +16,17 @@ Big picture statements per project (or shared across a group), with a full revis
 - Markdown and PDF export
 - Automatic snapshot backups on every launch (30 daily + 10 weekly)
 - Themes, fonts, and seven "dresses" for the tasks pane
+
+
+## More Details:
+
+- Breakdown:
+Projects are broken into aims, then sub-objectives, then tracked tasks. Sub-objectives function as a day planner and include block     editor for the notes you want to make along the way to reaching those objectives. The Map is a dashboard that monitors all your various projects, so overdue work always lands in the central "control centre". 
+- Data:
+Everything lives as plain JSON and Markdown
+in one `data/` folder — no account, no sync, no server. You can direct your backups to anywhere you like (such as an iCloud folder).
+
+
 
 ## Running it
 
