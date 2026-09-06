@@ -1,7 +1,7 @@
 {
   "name": "index",
   "productName": "Index",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Personal index of notes, projects, and change tracking — plain files, no cloud",
   "main": "main.js",
   "scripts": {
