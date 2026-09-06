@@ -394,6 +394,30 @@ function registerIpc() {
     return { notebooks: tree };
   });
 
+  // A big-picture question rides whatever owns the project — the family
+  // when grouped, else the project itself. When a project changes hands,
+  // the question has to travel with it or the plate stays stuck over the
+  // place it left. If the destination already has a live wording, the
+  // carried one folds into its history rather than being dropped.
+  function moveBigPicture(src, dst, context) {
+    const has = (o) => o && (o.bigPicture || o.bigPictureResolution || (o.bigPictureHistory || []).length);
+    if (src === dst || !has(src)) return null;
+    const q = src.bigPicture, r = src.bigPictureResolution, hist = src.bigPictureHistory || [];
+    src.bigPicture = null; src.bigPictureResolution = null; src.bigPictureHistory = [];
+    const oldHist = dst.bigPictureHistory || [];
+    if (dst.bigPicture) {
+      dst.bigPictureHistory = [
+        ...(q ? [{ text: q.text, until: todayStr(), ...(r ? { resolution: r.text } : {}) }] : []),
+        ...hist, ...oldHist,
+      ].slice(0, 50);
+      return `${context} — the big picture folded into ${dst.name}'s history`;
+    }
+    dst.bigPicture = q;
+    dst.bigPictureResolution = r;
+    dst.bigPictureHistory = [...hist, ...oldHist].slice(0, 50);
+    return `${context} — the big picture moved with ${dst.name}`;
+  }
+
   // ---- Notebooks / sections ----
 
   ipcMain.handle('notebook:create', async (_e, { name, universeId }) => {
@@ -696,10 +720,22 @@ function registerIpc() {
     if (!nb) throw new Error('Project not found');
     const allowed = ['status', 'dueDate', 'color', 'groupId', 'description', 'scrappedReason', 'shelved'];
     const statusChanged = patch.status && patch.status !== nb.status;
+    const oldGroupId = nb.groupId;
     for (const k of allowed) {
       if (k in patch) nb[k] = patch[k] === undefined ? null : patch[k];
     }
+    // Moving to a different family (or out on its own) carries the big
+    // picture along — from the old owner to the new one.
+    let movedBigPicture = null;
+    if ('groupId' in patch && patch.groupId !== oldGroupId) {
+      const src = (oldGroupId && tree.groups.find(g => g.id === oldGroupId)) || nb;
+      const dst = (nb.groupId && tree.groups.find(g => g.id === nb.groupId)) || nb;
+      movedBigPicture = moveBigPicture(src, dst, nb.name);
+    }
     await store.saveNotebooks(tree);
+    if (movedBigPicture) {
+      await store.appendActivity({ type: 'bigpicture.move', entityId: nb.id, summary: movedBigPicture });
+    }
     if (statusChanged) {
       await store.appendActivity({
         type: 'project.status', entityId: nb.id,
@@ -790,10 +826,17 @@ function registerIpc() {
     const g = tree.groups.find(x => x.id === id);
     tree.groups = tree.groups.filter(x => x.id !== id);
     // Members and nested groups don't die — they unparent.
-    for (const nb of tree.notebooks) if (nb.groupId === id) nb.groupId = null;
+    const members = tree.notebooks.filter(nb => nb.groupId === id);
+    for (const nb of members) nb.groupId = null;
     for (const other of tree.groups) if (other.parentId === id) other.parentId = null;
+    // The group's big picture rides its first member out — otherwise it
+    // would die with the group.
+    const movedBigPicture = g && members[0]
+      ? moveBigPicture(g, members[0], `Group “${g.name}” deleted`)
+      : null;
     await store.saveNotebooks(tree);
     if (g) await store.appendActivity({ type: 'group.delete', entityId: id, summary: `Deleted project group “${g.name}”` });
+    if (movedBigPicture) await store.appendActivity({ type: 'bigpicture.move', entityId: members[0].id, summary: movedBigPicture });
     return tree;
   });
 
