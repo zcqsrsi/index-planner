@@ -8,6 +8,36 @@ Everything about Index was designed with the aim of creating a calm, pleasant an
 
 The focal point is a floating ring that tracks your projects, allowing you to get to grips with the tasks ahead with a simple glance. As your projects evolve, the threads of their tasks, notes and the “big-picture” questions they aim to answer are stored in a constellation (threads: sky view), giving you the big picture of your work and any revisions, changes in direction, or resolved questions so far.
 
+## Every open thread on one ring
+
+![The Map in Navy Dawn: six projects as equal ring segments, the whole workload counted in the middle](docs/shot-map-day.png)
+
+The Map — Navy Dawn. One segment per project; the count in the middle is the whole workload. Dark mode is at the bottom of this page.
+
+## Projects
+
+| | |
+|---|---|
+| ![Projects with the sidebar open: project groups down the left, the selected project's big picture question, its resolution and day rows on the right](docs/shot-projects.png) | ![The notes pane alone: a page with headings, a list, a code block and a quote](docs/shot-notes.png) |
+
+Groups and projects down the left; the selected one's big-picture question, its resolution, and its day rows on the right. The notes pane on its own — pages with headings, lists, code and quotes. Any pane can fold away when you want just one on screen.
+
+## Threads — the sky view
+
+![Threads sky view in Navy Dawn: six constellations, question plates above their families, one resolution landed on a dashed diagonal](docs/shot-threads.png)
+
+Every page and open task is a star, dimming as a thing goes untended. Shared questions gather their constellations into a family under one plate; a resolved question lands its answer on a dashed line.
+
+---
+
+## After dark
+
+| | |
+|---|---|
+| ![The Map in Navy: proportional segments, one plate floating above the ring with its project named in the centre](docs/shot-map-dark.png) | ![Threads sky view in Navy: constellations glowing on a night sky](docs/shot-threads-dark.png) |
+
+Navy. Segments grow with each project's open tasks; touching one lifts it clear of the ring and names it in the centre. The same sky, night side: fresh threads glow; long-untended ones dim quietly away.
+
 ## Features:
 - Big picture statements per project (or shared across a group), with a full revision history
 - Block editor with page links (`@`), inline tags (`#tag`), undo/redo, images, page history

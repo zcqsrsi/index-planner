@@ -2,6 +2,7 @@ node_modules/
 .DS_Store
 *.png
 !build/icon.png
+!docs/*.png
 data/
 dist/
 .Rhistory
