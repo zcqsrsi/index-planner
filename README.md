@@ -1,8 +1,10 @@
 # Index: approach sustained exploratory projects with trackable tasks and organised notes.
 
-Index is a project planner and notebook for macOS that dynamically reacts to the work you need to do. The motivation was to create a notebook and planner to help break down research tasks with broad, open-ended goals into tangible sub objectives all while having those objects tracked- so you never lose your bearings. 
+Index is a project planner and notebook for macOS that dynamically reacts to the work you need to do. When undertaking open-ended projects (like a PhD), with many moving parts, drawing up to-do lists is easy, but actually keeping your bearings is hard. 
 
-Everything was designed with the aim of creating a calm, pleasant and productive workspace. Therefore, instead of traditional long lists of overdue reminders(!), Index includes more abstract ways to present your workload. 
+The motivation was to create a notebook and planner specifically designed to help break down research tasks with broad, open-ended goals into tangible sub objectives and while tracking those objectives- so you never lose your bearings.
+
+Everything about Index was designed with the aim of creating a calm, pleasant and productive workspace. Therefore, instead of traditional long lists of overdue reminders(!), Index includes more abstract ways to present your workload. 
 
 The focal point is a floating ring that tracks your projects, allowing you to get to grips with the tasks ahead with a simple glance. As your projects evolve, the threads of their tasks, notes and the “big-picture” questions they aim to answer are stored in a constellation (threads: sky view), giving you the big picture of your work and any revisions, changes in direction, or resolved questions so far.
 
