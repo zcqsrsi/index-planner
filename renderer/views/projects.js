@@ -92,8 +92,19 @@ export async function toggleFold(key, backTo = 'projects') {
 }
 
 async function refresh() {
+  // A tick rebuilds the pane — keep the reader where they were, or the
+  // second click of a double-tick lands on a day row that scrolled away.
+  const scrolled = ['.fp-tasks', '.fp-notes-index', '.fp-notes-host']
+    .map(sel => ({ sel, top: document.querySelector(sel)?.scrollTop }))
+    .filter(s => s.top);
   await window.__index.refreshTree();
   window.__index.goto('projects');
+  requestAnimationFrame(() => {
+    for (const { sel, top } of scrolled) {
+      const el = document.querySelector(sel);
+      if (el) el.scrollTop = top;
+    }
+  });
 }
 
 // Whole calendar days a task has been open — still used for stale badges.
@@ -982,6 +993,10 @@ function taskMenu(e, p, section, t) {
     })),
   ];
   contextMenu(e.clientX, e.clientY, [
+    ...(OPEN_STATUSES.has(t.status) ? [{ label: 'Tick off', onClick: async () => {
+      await window.api.saveTask(p.id, { ...t, status: 'done' }, section?.id || null);
+      await refresh();
+    } }] : []),
     { label: 'Rename…', onClick: () => renameTask(p, section, t) },
     { label: OPEN_STATUSES.has(t.status) ? 'Scrapped…' : 'Reopen', onClick: () => scrapTask(p, section, t) },
     { label: t.dueDate ? 'Change deadline…' : 'Set deadline…', onClick: () => deadlineModal(p, section, t) },
