@@ -231,14 +231,17 @@ export async function renderSky(host, qi, questionAsOf) {
       halfW: Math.max(...lines.map(l => l.length * 0.62 * fs)) / 2,
       h,
     };
-    qlabels.push(plate);
+    const res = owner.bigPictureResolution?.text;
+    // A paired plate travels only inside its compound below — pushing it
+    // here as well would set the escape pass against a plate fighting its
+    // own compound, and paint the pair twice over at the end.
+    if (!res) qlabels.push(plate);
     // The outcome: the answer, so far — landed text, no quotation marks.
     // Its plate sits down-right of the question on a dashed diagonal, so
     // the eye reads question → answer the way we read. Pair and answer
     // travel as ONE compound plate — the diagonal between them is fixed —
     // so however the escape pass has to travel them, the answer never
     // ends up level with, above, or left of its question.
-    const res = owner.bigPictureResolution?.text;
     if (res) {
       const olines = wrap(res, fs);
       const oh = olines.length * lh;
@@ -258,7 +261,7 @@ export async function renderSky(host, qi, questionAsOf) {
       qlabels.push({
         compound: true, q: plate, o,
         x: cx, y: cy,
-        halfW: (rightX - leftX) / 2, h: botY - topY,
+        halfW: (rightX - leftX) / 2, h: botY - topY, // the block; the settle pass sees the two boxes
         qx: plate.x - cx, qy: plate.y - cy,
         ox: o.x - cx, oy: o.y - cy,
       });
@@ -268,36 +271,184 @@ export async function renderSky(host, qi, questionAsOf) {
   // plate, every thread name, and every star — a question never sits on
   // a constellation. Only question plates move, along whichever axis
   // escapes soonest.
+  // Each obstacle is the box it actually paints: a name's glyph band
+  // hung from its baseline (22 under the hub), a star's glow — not the
+  // generous slabs that starve a crowded sky of anywhere to go.
+  const nfs = NAME_FS * Math.min(S, 1.5);
   const others = projects.map((p) => ({
-    x: p.hub[0], y: p.hub[1] + 22, halfW: nameHalfW(p), h: NAME_FS * Math.min(S, 1.5),
+    x: p.hub[0], y: p.hub[1] + 22 - nfs * 0.35, halfW: nameHalfW(p), h: nfs * 1.1,
   }));
   for (const p of projects) {
     for (const s of p.stars) {
-      others.push({ x: s.x, y: s.y, halfW: s.r + 9, h: s.r * 2 + 9 });
+      others.push({ x: s.x, y: s.y, halfW: s.r + 5, h: (s.r + 5) * 2 });
     }
   }
-  for (let pass = 0; pass < 80; pass++) {
-    let moved = false;
-    for (const m of qlabels) {
-      for (const o of [...qlabels, ...others]) {
-        if (o === m) continue;
-        const dx = m.x - o.x, dy = m.y - o.y;
-        const ox = m.halfW + o.halfW - Math.abs(dx);
-        const oy = (m.h + o.h) / 2 - Math.abs(dy);
-        if (ox <= 0 || oy <= 0) continue;
-        // Escape along the axis with the least overlap to travel.
-        if (oy <= ox) m.y += (dy >= 0 ? 1 : -1) * (oy + 2);
-        else m.x += (dx >= 0 ? 1 : -1) * (ox + 2);
-        moved = true;
+  const bodies = [...qlabels, ...others];
+  // A pair travels as one rigid compound but collides as its two boxes:
+  // the diagonal gap between question and outcome is open sky, and
+  // counting it solid starves the sky of room the plates can see but the
+  // solver could not. Every collider is the box its plate paints — 9px
+  // past the text each side, 5 above and below. Colliders carry absolute
+  // positions; a parent's move is mirrored into them (sync).
+  const colsOf = (m) => m.compound
+    ? [m.q, m.o].map((part) => ({ p: m, x: 0, y: 0, halfW: part.halfW + 9, h: part.h + 10 }))
+    : [{ p: m, x: 0, y: 0, halfW: m.halfW + 9, h: m.h + 10 }];
+  for (const m of qlabels) m.cols = colsOf(m);
+  for (const o of others) o.cols = [{ p: null, x: o.x, y: o.y, halfW: o.halfW, h: o.h }];
+  const sync = (m) => {
+    if (m.compound) {
+      m.cols[0].x = m.x + m.qx; m.cols[0].y = m.y + m.qy;
+      m.cols[1].x = m.x + m.ox; m.cols[1].y = m.y + m.oy;
+    } else { m.cols[0].x = m.x; m.cols[0].y = m.y; }
+  };
+  for (const m of qlabels) sync(m);
+  // Home: where each plate starts, hanging over the constellations it
+  // captions. The settle pass below scores every candidate move by the
+  // overlap it would land in plus its drift from home — so a plate
+  // clears its touches with the shortest journey that keeps it a caption
+  // of its own threads, not a stray note in someone else's sky.
+  for (const m of qlabels) { m.hx = m.x; m.hy = m.y; }
+  const allCols = [];
+  for (const b of bodies) allCols.push(...b.cols);
+  // A settle for whatever blind repulsion could not clear: a plate
+  // still touching anything surveys rings of spots around its home,
+  // nearest first, and takes the first clear one it finds — the
+  // shortest journey that keeps it a caption of its own threads, not a
+  // stray note in someone else's sky. Each ring is walked pointing
+  // OUTWARD first, away from the middle of the sky: a displaced plate
+  // leaves toward the edge, not across the open centre every
+  // constellation can see. Only when no surveyed spot is clear does it
+  // settle for the least crowded.
+  const crowd = (m, x, y) => {
+    let sum = 0;
+    for (const c of m.cols) {
+      const cx = c.x + (x - m.x), cy = c.y + (y - m.y); // boxes travel with their parent
+      for (const d of allCols) {
+        if (d.p === m) continue;
+        // True intersection, edge to edge — not the center-distance
+        // shortcut: that one is the right TRAVEL distance (the escape
+        // pass uses it so a shove fully separates), but as an overlap
+        // width it charges a star swallowed whole by a plate for half
+        // the plate's width, thousands of px² of crowd that isn't there.
+        const ox = Math.min(cx + c.halfW, d.x + d.halfW) - Math.max(cx - c.halfW, d.x - d.halfW);
+        const oy = Math.min(cy + c.h / 2, d.y + d.h / 2) - Math.max(cy - c.h / 2, d.y - d.h / 2);
+        if (ox > 0 && oy > 0) sum += ox * oy;
       }
-      m.x = Math.max(m.halfW + 14, Math.min(W - m.halfW - 14, m.x));
-      m.y = Math.max(m.h / 2 + 8, Math.min(H - m.h / 2 - 8, m.y));
     }
-    if (!moved) break;
+    return sum;
+  };
+  const settleOne = (m) => {
+    const now = crowd(m, m.x, m.y);
+    if (now === 0) return false;
+    const fits = (x0, y0) => {
+      let x = x0, y = y0;
+      for (const c of m.cols) { // every box of the plate stays in the panel
+        x = Math.max(c.halfW + 14 - (c.x - m.x), Math.min(W - c.halfW - 14 - (c.x - m.x), x));
+        y = Math.max(c.h / 2 + 8 - (c.y - m.y), Math.min(H - c.h / 2 - 8 - (c.y - m.y), y));
+      }
+      return { x, y, c: crowd(m, x, y) };
+    };
+    const phi = Math.atan2(m.hy - H / 2, m.hx - W / 2); // home's bearing out of the centre
+    // A spiral of candidate spots at roughly `step` ground resolution —
+    // every ring is sampled finely enough that no pocket between rings
+    // goes unseen, and fixed radii never leave radial gaps. Each ring is
+    // walked from the outward bearing: a near clear pocket always wins
+    // over a far one, and a displaced plate stays pointed at the edge,
+    // not across the open centre of the sky.
+    const spiral = (cx, cy, maxR, step) => {
+      let best = null;
+      for (let r = 0; r <= maxR; r += step) {
+        const n = r === 0 ? 1 : Math.max(12, Math.round((2 * Math.PI * r) / step));
+        for (let a = 0; a < n; a++) {
+          const t = phi + (a / n) * Math.PI * 2 + r * 0.11; // rings offset, so they never share rays
+          const f = fits(cx + Math.cos(t) * r, cy + Math.sin(t) * r);
+          if (f.c === 0) return f; // clear — the caller takes it as it stands
+          if (!best || f.c < best.c) best = f;
+        }
+      }
+      return best; // least crowded surveyed, clear none was
+    };
+    // A clear pocket beside where the plate sits is the shortest journey
+    // of all, so a fine spiral around the current spot comes first —
+    // then a wider one around home; when neither finds clear sky,
+    // hill-descend — re-spiral around the least crowded spot until a
+    // clear one turns up or the ground stops improving.
+    let best = spiral(m.x, m.y, 180, 12);
+    if (best.c > 0) {
+      const h = spiral(m.hx, m.hy, 350, 12);
+      if (h.c < best.c) best = h;
+      if (best.c > 0) {
+        let x = best.x, y = best.y;
+        for (let hop = 0; hop < 4; hop++) {
+          const f = spiral(x, y, 110, 12);
+          if (f.c === 0) { best = f; break; }
+          if (f.c >= best.c) break;
+          best = f; x = f.x; y = f.y;
+        }
+      }
+    }
+    if (best && best.c < now) { m.x = best.x; m.y = best.y; sync(m); return true; }
+    return false; // even the least crowded surveyed spot is no better — the sky is full here
+  };
+  // Big plates claim their ground first — a compound is far harder to
+  // place than a lone plate, so the small ones dodge around it.
+  const settleOrder = [...qlabels].sort((a, b) =>
+    b.cols.reduce((t, c) => t + c.halfW * c.h, 0) - a.cols.reduce((t, c) => t + c.halfW * c.h, 0));
+  // Escape, then settle, then escape again: the two passes break each
+  // other's deadlocks. Blind repulsion shoves two blocking plates apart
+  // in the same pass where the settle pass can only move one of them,
+  // and the settle pass walks the shoved plates back to the nearest
+  // clear ground around their homes. A round where neither pass moved
+  // anything is the end.
+  for (let round = 0; round < 4; round++) {
+    let escaped = false;
+    for (let pass = 0; pass < 80; pass++) {
+      let moved = false;
+      for (const m of qlabels) {
+        // The escape pass pushes BLOCKS — a compound as its whole union, so
+        // its two boxes never tug-of-war the pair apart. The settle
+        // pass spends the gap this block cannot see.
+        const bHW = m.compound ? m.halfW : m.halfW + 9, bH = m.compound ? m.h : m.h + 10;
+        for (const d of allCols) {
+          if (d.p === m) continue; // a plate never collides with its own boxes
+          const dx = m.x - d.x, dy = m.y - d.y;
+          const ox = bHW + d.halfW - Math.abs(dx);
+          const oy = (bH + d.h) / 2 - Math.abs(dy);
+          if (ox <= 0 || oy <= 0) continue;
+          // Escape along the axis with the least overlap to travel —
+          // but when that axis is pinned against the panel edge, slide
+          // along the other instead of bouncing off the clamp.
+          if (oy <= ox) {
+            const ny = m.y + (dy >= 0 ? 1 : -1) * (oy + 2);
+            if (ny >= bH / 2 + 8 && ny <= H - bH / 2 - 8) m.y = ny;
+            else m.x += (dx >= 0 ? 1 : -1) * (ox + 2);
+          } else {
+            const nx = m.x + (dx >= 0 ? 1 : -1) * (ox + 2);
+            if (nx >= bHW + 14 && nx <= W - bHW - 14) m.x = nx;
+            else m.y += (dy >= 0 ? 1 : -1) * (oy + 2);
+          }
+          sync(m);
+          moved = true;
+        }
+        m.x = Math.max(bHW + 14, Math.min(W - bHW - 14, m.x));
+        m.y = Math.max(bH / 2 + 8, Math.min(H - bH / 2 - 8, m.y));
+        sync(m);
+      }
+      if (!moved) break;
+      escaped = true;
+    }
+    let settled = false;
+    for (let sweep = 0; sweep < 4; sweep++) {
+      let moved = false;
+      for (const m of settleOrder) if (settleOne(m)) moved = true;
+      if (!moved) break;
+      settled = true;
+    }
+    if (!escaped && !settled) break;
   }
-  // Unfold the pairs: wherever the escape pass left a compound, its
-  // question and answer snap back onto their fixed diagonal — the answer
-  // still sits down-right of its question, no matter how the pair had to
+  // Unfold the pairs: wherever the passes left a compound, its question
+  // and answer snap back onto their fixed diagonal — the answer still
+  // sits down-right of its question, no matter how the pair had to
   // travel to find clear sky.
   const flat = [];
   for (const m of qlabels) {
