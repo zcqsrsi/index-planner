@@ -158,7 +158,7 @@ export async function renderSky(host, qi, questionAsOf) {
     // reveal (below) reads its own, around the loop.
     stars.forEach((s) => {
       const age = s.ts ? ageDays(s.ts) : 120;
-      s.b = Math.max(0.12, 1 - age / 120); // brightness — recency
+      s.b = Math.max(0.25, 1 - age / 120); // alpha — max fade 75%
       s.fresh = age < 8;
       const ang = rnd() * Math.PI * 2, rad = (36 + rnd() * 96) * S;
       s.x = Math.max(46, Math.min(W - 46, p.hub[0] + Math.cos(ang) * rad));
@@ -170,7 +170,7 @@ export async function renderSky(host, qi, questionAsOf) {
           Math.abs(s.x - p.hub[0]) < nameHalfW(p) + 14) {
         s.y = Math.max(64, p.hub[1] - 52 - rnd() * 34);
       }
-      s.r = ((s.kind === 'page' ? 3 : 1.9) + s.b * (s.kind === 'page' ? 2.6 : 1.7)) * Math.min(S, 1.5);
+      s.r = ((s.kind === 'page' ? 3 : 1.9) * Math.min(S, 1.5));
     });
     stars.forEach(s => { s.thread = p; });
     p.stars = stars;
