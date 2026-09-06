@@ -234,20 +234,33 @@ export async function renderSky(host, qi, questionAsOf) {
     qlabels.push(plate);
     // The outcome: the answer, so far — landed text, no quotation marks.
     // Its plate sits down-right of the question on a dashed diagonal, so
-    // the eye reads question → answer the way we read. It rides the same
-    // escape pass as every plate, and the diagonal is drawn between
-    // wherever the two finally settle.
+    // the eye reads question → answer the way we read. Pair and answer
+    // travel as ONE compound plate — the diagonal between them is fixed —
+    // so however the escape pass has to travel them, the answer never
+    // ends up level with, above, or left of its question.
     const res = owner.bigPictureResolution?.text;
     if (res) {
       const olines = wrap(res, fs);
       const oh = olines.length * lh;
-      qlabels.push({
+      const o = {
         lines: olines, fs, lh,
         outcome: true, q: plate,
-        x: plate.x + plate.halfW + 52,
-        y: plate.y + h / 2 + oh / 2 + 22,
         halfW: Math.max(...olines.map(l => l.length * 0.62 * fs)) / 2,
         h: oh,
+      };
+      o.x = plate.x + plate.halfW + o.halfW + 24; // answer's left edge clears the question's right
+      o.y = plate.y + h / 2 + o.h / 2 + 40; // and sits a step lower, not level
+      const leftX = Math.min(plate.x - plate.halfW, o.x - o.halfW) - 9;
+      const rightX = Math.max(plate.x + plate.halfW, o.x + o.halfW) + 9;
+      const topY = Math.min(plate.y - plate.h / 2, o.y - o.h / 2) - 5;
+      const botY = Math.max(plate.y + plate.h / 2, o.y + o.h / 2) + 5;
+      const cx = (leftX + rightX) / 2, cy = (topY + botY) / 2;
+      qlabels.push({
+        compound: true, q: plate, o,
+        x: cx, y: cy,
+        halfW: (rightX - leftX) / 2, h: botY - topY,
+        qx: plate.x - cx, qy: plate.y - cy,
+        ox: o.x - cx, oy: o.y - cy,
       });
     }
   }
@@ -282,7 +295,18 @@ export async function renderSky(host, qi, questionAsOf) {
     }
     if (!moved) break;
   }
+  // Unfold the pairs: wherever the escape pass left a compound, its
+  // question and answer snap back onto their fixed diagonal — the answer
+  // still sits down-right of its question, no matter how the pair had to
+  // travel to find clear sky.
+  const flat = [];
   for (const m of qlabels) {
+    if (!m.compound) { flat.push(m); continue; }
+    m.q.x = m.x + m.qx; m.q.y = m.y + m.qy;
+    m.o.x = m.x + m.ox; m.o.y = m.y + m.oy;
+    flat.push(m.q, m.o);
+  }
+  for (const m of flat) {
     const top = m.y - m.h / 2;
     // The diagonal runs under the plates: the question's bottom-right
     // corner down to its outcome's top-left.
