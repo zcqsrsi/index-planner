@@ -17,7 +17,6 @@ The focal point is a floating ring that tracks your projects, allowing you to ge
 - Automatic snapshot backups on every launch (30 daily + 10 weekly)
 - Themes, fonts, and seven "dresses" for the tasks pane
 
-
 ## More Details:
 
 - Breakdown:
@@ -26,14 +25,26 @@ Projects are broken into aims, then sub-objectives, then tracked tasks. Sub-obje
 Everything lives as plain JSON and Markdown
 in one `data/` folder — no account, no sync, no server. You can direct your backups to anywhere you like (such as an iCloud folder).
 
+## Install
 
+1. [Download the DMG](https://github.com/zcqsrsi/index-planner/releases/latest)
+   from the Releases page (Apple Silicon Macs — M1 or later).
+2. Open the DMG and drag **Index** into Applications.
+3. On first launch only, right-click the app and choose **Open**, then
+   confirm — Index is an unsigned app, so macOS Gatekeeper needs that one
+   nudge. After that it opens like any other app.
 
-## Running it
+New versions appear on the same Releases page; replace the app in
+Applications to update. Your data is untouched — see below.
+
+## Building from source
 
 Built with Electron, no framework, no bundler — every file is plain readable
-JavaScript.
+JavaScript. You need Node.js and npm.
 
 ```
+git clone https://github.com/zcqsrsi/index-planner.git
+cd index-planner
 npm install     # once; installs the dev dependencies
 npm start       # run the app
 npm run dev     # run with DevTools attached
@@ -85,8 +96,6 @@ snapshots off the machine when the network allows.
 
 - The editor's undo is block-level (structural changes), not character-level.
 - No tables or nested pages — deliberately.
-- The packaged app is unsigned; macOS Gatekeeper needs a first
-  right-click → Open.
 - macOS only (the day planner and shortcuts assume Mac keys).
 
 ## License
