@@ -92,9 +92,11 @@ export async function renderSky(host, qi, questionAsOf) {
       90 + (50 + Math.sin(a) * rr * 34) / 100 * (H - 180),
     ];
     // Members take the same golden angle around the anchor — a local,
-    // tight echo of the sky above them. A lone member sits on it.
+    // tight echo of the sky above them. A lone member sits on it. The
+    // spread grows with the family: each member carries a star cloud
+    // ~120·S wide, so the spacing has to clear two of those.
     const m = members.length;
-    const spread = (46 + m * 14) * Math.min(1.3, S);
+    const spread = (64 + m * 20) * Math.min(1.4, S);
     members.forEach((p, j) => {
       const aa = j * 2.399963 + i * 1.7;
       const rm = m === 1 ? 0 : Math.sqrt((j + 0.5) / m);
@@ -108,8 +110,9 @@ export async function renderSky(host, qi, questionAsOf) {
   });
   // Names hang centered under hubs, so hubs repel until no two labels can
   // collide — and stay inside the panel while they do. Inside a group the
-  // repulsion is halved: family members sit closer than strangers ever
-  // may, their color is what binds them.
+  // repulsion eases (family members sit closer than strangers ever may,
+  // their color is what binds them) but never so far that their star
+  // clouds interleave.
   const sameGroup = (A, B) => A.groupId && A.groupId === B.groupId;
   for (let pass = 0; pass < 80; pass++) {
     let moved = false;
@@ -119,7 +122,7 @@ export async function renderSky(host, qi, questionAsOf) {
         const dx = B.hub[0] - A.hub[0], dy = B.hub[1] - A.hub[1];
         const d = Math.hypot(dx, dy) || 0.01;
         let minD = nameHalfW(A) + nameHalfW(B) + 30;
-        if (sameGroup(A, B)) minD = Math.max(26, minD * 0.5);
+        if (sameGroup(A, B)) minD = Math.max(40, minD * 0.72);
         if (d >= minD) continue;
         const push = (minD - d) / 2, ux = dx / d, uy = dy / d;
         A.hub[0] -= ux * push; A.hub[1] -= uy * push;
@@ -160,6 +163,13 @@ export async function renderSky(host, qi, questionAsOf) {
       const ang = rnd() * Math.PI * 2, rad = (36 + rnd() * 96) * S;
       s.x = Math.max(46, Math.min(W - 46, p.hub[0] + Math.cos(ang) * rad));
       s.y = Math.max(64, Math.min(H - 52, p.hub[1] + Math.sin(ang) * rad * 0.9));
+      // The name hangs centered under the hub — a star that lands in its
+      // band lifts above the hub instead, so no constellation caption ever
+      // reads through starlight.
+      if (s.y > p.hub[1] && s.y < p.hub[1] + 48 &&
+          Math.abs(s.x - p.hub[0]) < nameHalfW(p) + 14) {
+        s.y = Math.max(64, p.hub[1] - 52 - rnd() * 34);
+      }
       s.r = ((s.kind === 'page' ? 3 : 1.9) + s.b * (s.kind === 'page' ? 2.6 : 1.7)) * Math.min(S, 1.5);
     });
     stars.forEach(s => { s.thread = p; });
